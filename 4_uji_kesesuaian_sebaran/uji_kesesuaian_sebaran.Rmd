@@ -1,0 +1,146 @@
+---
+title: "Uji Kesesuaian Sebaran"
+author: "Tim Modul"
+date: "12/27/2020"
+output: html_document
+---
+
+```{r, include=FALSE}
+library(knitr)
+```
+
+
+# Materi
+Uji kesesuaian sebaran pada materi ini adalah uji untuk melakukan pengecekan apakah suatu data berdistribusi normal. Hipotesis dari semua uji yang akan dibahas sama, yaitu
+
+- 𝐻_0: Data berdistribusi normal
+- 𝐻_1: Data tidak berdistribusi normal
+
+# Membuat data dummy
+
+### Data berdistribusi normal
+```{r}
+set.seed(2723)
+dummy_norm <- rnorm(50, 27, sqrt(23))
+dummy_norm
+```
+
+### Data berdistribusi Gamma
+```{r}
+set.seed(2237)
+dummy_gamma <- rgamma(50, shape = 10)
+dummy_gamma
+```
+
+
+# Uji Shapiro Wilk
+Uji Shapiro-Wilk digunakan sebagai uji kenormalan data. Untuk menggunakan uji ini dapat menggunakan function `shapiro.test(x)`
+
+### Cek kenormalan pada data `dummy_norm`
+```{r}
+shapiro.test(dummy_norm)
+```
+
+Terlihat bahwa p-value lebih besar dari 0.05, sehingga dengan tingkat signifikansi 5% kita gagal menolak H0 dan menyimpulkan bahwa data berdistribusi normal
+
+### Cek kenormalan pada data `dummy_gamma`
+```{r}
+shapiro.test(dummy_gamma)
+```
+Terlihat bahwa p-value lebih kecil dari 0.05, sehingga dengan tingkat signifikansi 5% kita menolak H0 dan menyimpulkan bahwa data tidak berdistribusi normal
+
+# Uji Liliefors
+Untuk menggunakan uji ini dapat menggunakan function `lillie.test(x)` dari package `nortest`
+
+```{r message=FALSE, warning=FALSE}
+# install.packages("nortest")
+library(nortest)
+```
+
+### Cek kenormalan pada data `dummy_norm`
+```{r}
+lillie.test(dummy_norm)
+```
+
+Terlihat bahwa p-value lebih besar dari 0.05, sehingga dengan tingkat signifikansi 5% kita gagal menolak H0 dan menyimpulkan bahwa data berdistribusi normal
+
+### Cek kenormalan pada data `dummy_gamma`
+```{r}
+lillie.test(dummy_gamma)
+```
+Terlihat bahwa p-value lebih besar dari 0.05, sehingga dengan tingkat signifikansi 5% kita gagal menolak H0 dan menyimpulkan bahwa data berdistribusi normal. Ini berarti data berdistribusi gamma juga disimpulkan berdistribusi normal oleh Liliefors Test.
+
+
+# Uji Kolmogorov Smirnov
+Untuk menggunakan uji ini dapat menggunakan function `ks.test(x)`. Uji Kolmogorov Smirnov ini sebenarnya tidak hanya untuk menguji kenormalan tetapi dapat untuk menguji sebaran distribusi lainnya
+
+### Cek kenormalan pada data `dummy_norm`
+Untuk mengujinya kita harus menspesifikasikan nilai `mean` dan `sd`
+```{r}
+ks.test(dummy_norm, "pnorm", mean = 27, sd = sqrt(23))
+```
+
+Terlihat bahwa p-value lebih besar dari 0.05, sehingga dengan tingkat signifikansi 5% kita gagal menolak H0 dan menyimpulkan bahwa data berdistribusi normal dengan `mean = 27` dan `sd = sqrt(23)`
+
+### Cek kenormalan pada data `dummy_gamma`
+```{r}
+ks.test(dummy_gamma, "pnorm", mean = 27, sd = sqrt(23))
+```
+
+Terlihat bahwa p-value lebih kecil dari 0.05, sehingga dengan tingkat signifikansi 5% kita menolak H0 dan menyimpulkan bahwa data tidak berdistribusi normal
+
+### Menggunakan Shapiro Wilk untuk melihat apakah data berdistribusi gamma
+
+- 𝐻_0: Data berdistribusi gamma
+- 𝐻_1: Data tidak berdistribusi gamma
+
+```{r}
+ks.test(dummy_gamma, "pgamma", shape = 10)
+```
+Terlihat p-value yang sangat besar yang berarti kita gagal menolak H0, sehingga data dapat disimpulkan berdistribusi gamma dengan `shape = 10`
+
+
+# Pembahasan Latihan Soal
+
+```{r}
+data <- read.csv("https://raw.githubusercontent.com/modul60stis/data/main/data_dummy_komstat.csv")
+kable(head(data, 10))
+```
+
+## Nomor 1
+Ujilah apakah dua variabel continue pada data_dummy_komstat.csv berdistribusi normal?
+
+### Pembahasan Nomor 1
+
+#### Cek normalitas pada variabel `sebelum`
+```{r}
+shapiro.test(data$sebelum)
+```
+Terlihat bahwa p-value lebih besar dari 0.05, sehingga dengan tingkat signifikansi 5% kita gagal menolak H0 dan menyimpulkan bahwa variabel `sebelum`  berdistribusi normal
+
+#### Cek normalitas pada variabel `sesudah`
+```{r}
+shapiro.test(data$sesudah)
+```
+Terlihat bahwa p-value lebih besar dari 0.05, sehingga dengan tingkat signifikansi 5% kita gagal menolak H0 dan menyimpulkan bahwa variabel `sesudah`  berdistribusi normal
+
+## Nomor 2
+Jika variabel sebelum dan sesudah pada data_dummy_komstat.csv dibagi berdasarkan metode apakah berdistribusi normal?
+
+### Pembahasan Nomor 2
+
+#### Cek normalitas pada variabel `sebelum`
+```{r}
+tapply(data$sebelum, data$metode, shapiro.test)
+```
+
+Terlihat untuk semua metode p-value lebih besar dari 0.05, sehingga dapat disimpulkan untuk variabel `sebelum` jika dikatagori berdasarkan metode semuanya berdistribusi normal
+
+#### Cek normalitas pada variabel `sesudah`
+```{r}
+tapply(data$sesudah, data$metode, shapiro.test)
+```
+
+Terlihat untuk semua metode p-value lebih besar dari 0.05, sehingga dapat disimpulkan untuk variabel `sesudah` jika dikatagori berdasarkan metode semuanya berdistribusi normal
+
+
