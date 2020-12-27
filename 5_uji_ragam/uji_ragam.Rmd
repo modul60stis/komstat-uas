@@ -1,0 +1,205 @@
+---
+title: "Uji Ragam"
+author: "Tim Modul"
+date: "12/27/2020"
+output: html_document
+---
+
+```{r, include=FALSE}
+library(knitr)
+```
+
+# Materi
+**Acuan Materi**
+
+1. [One Variance Chi-Square Test](https://rpubs.com/mpfoley73/460916)
+2. [Compare Multiple Sample Variances in R](http://www.sthda.com/english/wiki/compare-multiple-sample-variances-in-r#compute-bartletts-test-in-r)
+
+Pengujian hipotesis mengenai variansi populasi atau simpangan baku berarti kita ingin menguji hipotesis mengenai keseragaman suatu populasi ataupun membandingkan keseragaman suatu populasi dengan populasi lainnya.
+
+# Uji Varians Satu Populasi
+- 𝐻0: 𝜎= 𝜎0
+- 𝐻1: 𝜎≠ 𝜎0 atau 𝜎 < 𝜎0 atau 𝜎 > 𝜎0
+
+## Membuat Fungsi Sendiri
+```{r}
+var_satu_pop <- function(x, sigma.squared, alpa = 0.05, alternative = "two.sided"){
+      n <- length(x)
+      df <- n - 1
+      sample_variance <- var(x)
+      chi_hitung <- (n - 1) * sample_variance / sigma.squared
+      
+      p_value <- if(alternative == "less"){
+            pchisq(chi_hitung, df, lower.tail = TRUE)
+      } else if(alternative == "greater") {
+            pchisq(chi_hitung, df, lower.tail = FALSE)
+      } else {
+            2 * pchisq(chi_hitung, df, lower.tail = FALSE)
+      }
+      
+      keputusan <- NULL
+      if(alternative == "less"){
+            batas <- qchisq(alpa, df)
+            if (chi_hitung < batas)
+                  keputusan <- "Tolak H0"
+            else
+                  keputusan <- "Gagal Tolak H0"
+            alternative <- paste("less than", round(sigma.squared, 3))
+      } else if(alternative == "greater"){
+            batas <- qchisq(alpa, df, lower.tail = FALSE)
+            if (chi_hitung > batas)
+                  keputusan <- "Tolak H0"
+            else
+                  keputusan <- "Gagal Tolak H0"
+            alternative <- paste("grater than", round(sigma.squared, 3))
+      } else{
+            alternative <- "two.sided"
+            batas_atas <- qchisq(alpa / 2, df, lower.tail = FALSE)
+            batas_bawah <- qchisq(alpa / 2, df)
+            if (chi_hitung < batas_bawah | chi_hitung > batas_atas)
+                  keputusan <- "Tolak H0"
+            else
+                  keputusan <- "Gagal Tolak H0"
+            alternative <- paste("not equal", round(sigma.squared, 3))
+      }
+      
+      list(statistic = chi_hitung,
+           p_value = p_value,
+           df = df,
+           keputusan = keputusan,
+           alpa = alpa,
+           alternative = alternative,
+           sample_var = sample_variance)
+}
+```
+
+```{r}
+set.seed(27)
+dummy <- rnorm(50, mean = 0, sd = 2)
+result <- var_satu_pop(dummy, 2.5)
+result
+```
+
+## Menggunakan Function `varTest(x)` dari Package `EnvStats`
+```{r message=FALSE, warning=FALSE}
+# install.packages("EnvStats")
+library(EnvStats)
+varTest(dummy, sigma.squared = 2.5, alternative = "two.sided")
+```
+
+
+# Uji Varians Dua Populasi
+Uji yang digunakan adalah uji F. Uji F sangat sensitif terhadap asumsi kenormalan, oleh karena sebaiknya data perlu memenuhi asumsi kenormalan.
+
+- 𝐻0: 𝜎1= 𝜎2
+- 𝐻1: 𝜎1 ≠ 𝜎2 atau 𝜎1 < 𝜎2 atau 𝜎1 > 𝜎2
+
+
+## Menggunakan Function `var.test(x, y)`
+Nilai dari parameter alternative `alternative = c("two.sided"", "less", "greater")`
+```{r}
+x <- rnorm(40, mean = 27, sd = sqrt(10))
+y <- rnorm(40, mean = 23, sd = sqrt(11))
+var.test(x, y, alternative = "greater")
+```
+
+# Uji Varians Tiga Populasi atau Lebih
+
+## Uji Bartlett
+Uji ini digunakan untuk melihat kesamaan varians dari beberapa populasi yang berdistribusi normal. Hipotesa yang digunakan pada uji Bartlett adalah sebagai berikut:
+
+- 𝐻0: 𝜎1 = 𝜎2 = ... = 𝜎𝑘
+- 𝐻1: Setidaknya ada satu 𝜎𝑖 yang tidak sama
+
+Di R kita dapat menggunakan function `bartlett.test(formula, data)`
+
+```{r}
+data(PlantGrowth)
+kable(dplyr::sample_n(PlantGrowth, 10))
+```
+
+```{r}
+bartlett.test(weight ~ group, data = PlantGrowth)
+```
+
+## Uji Levene
+Uji Levene merupakan metode pengujian homogenitas varians yang hampir sama dengan uji Bartlett. Perbedaan uji Levene dengan uji Bartlett yaitu bahwa data yang diuji dengan uji Levene tidak harus berdistribusi normal, namun harus kontinu. Hipotesis
+
+- 𝐻0: 𝜎1 = 𝜎2 = ... = 𝜎𝑘
+- 𝐻1: Setidaknya ada satu 𝜎𝑖 yang tidak sama
+
+Di R kita dapat menggunakan function `leveneTest.test(formula, data)` dari package `car`
+
+```{r message=FALSE, warning=FALSE}
+# install.packages("car")
+library(car)
+leveneTest(weight ~ group, data = PlantGrowth)
+```
+
+# Pembahasan Latihan Soal
+Dengan menggunakan data_dummy_komstat.csv dan 𝛼 = 0.05
+
+```{r}
+alpa <- 0.05
+data <- read.csv("https://raw.githubusercontent.com/modul60stis/data/main/data_dummy_komstat.csv")
+kable(head(data, 10))
+```
+
+## Nomor 1
+Ujilah apakah variabel sebelum memiliki 𝜎=10?
+
+### Pembahasan Nomor 1
+Dengan menggunakan fungsi buatan sendiri
+```{r}
+var_satu_pop(data$sebelum, 10^2)
+```
+
+Dengan menggunakan `varTest`
+```{r}
+varTest(data$sebelum, sigma.squared = 100)
+```
+
+Terlihat bahwa hasilnya sama, p-value sebesar 0.2836 yang berarti gagal tolak H0, maka dengan tingkat signifikansi 5% diperoleh cukup bukti bahwa variabel `sebelum` memiliki `𝜎=10`
+
+## Nomor 2
+Ujilah apakah variabel sebelum dan sesudah memiliki varians yang sama?
+
+### Pembahasan Nomor 2
+
+Uji normalitas terlebih dahulu, yang akan digunakan adalah uji Shapiro Wilk
+```{r}
+shapiro.test(data$sebelum)
+```
+
+Diperoleh bahwa variabel `sebelum` berdistribusi normal
+
+```{r}
+shapiro.test(data$sesudah)
+```
+Diperoleh bahwa variabel `sesudah` berdistribusi normal
+
+```{r}
+var.test(data$sebelum, data$sesudah)
+```
+
+Terlihat bahwa nilai p-value sangat kecil, jauh lebih kecil dari 0.05, maka tolak H0. Sehingga dengan tingkat signifikansi 5% diperoleh cukup bukti bahwa keduanya memiliki varians yang berbeda
+
+## Nomor 3
+Jika variabel sebelum dan sesudah masing-masing dikelompokkan berdasarkan metode apakah memiliki varians yang sama?
+
+### Pembahasan Nomor 3
+
+Akan digunakan Uji Levene. Jika ingin menggunakan Uji Bartlett maka silahkan lakukan uji kenormalan terlebih dahulu
+
+#### Variabel `sebelum`
+```{r}
+leveneTest(sebelum ~ factor(metode), data = data)
+```
+Terlihat bahwa p-value lebih besar dari 0.05, jadi gagal tolak H0, yang berarti dengan tingkat signifikansi 5% variabel `sebelum` jika dikelompokkan berdasarkan metode memiliki varians yang sama
+
+#### Variabel `sesudah`
+```{r}
+leveneTest(sesudah ~ factor(metode), data = data)
+```
+
+Terlihat bahwa p-value lebih besar dari 0.05, jadi gagal tolak H0, yang berarti dengan tingkat signifikansi 5% variabel `sesudah` jika dikelompokkan berdasarkan metode memiliki varians yang sama
