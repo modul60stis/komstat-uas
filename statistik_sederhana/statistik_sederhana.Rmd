@@ -1,0 +1,301 @@
+---
+title: "Statistik Sederhana"
+author: "Tim Modul"
+date: "12/26/2020"
+output:  
+      md_document:
+            variant: markdown_github
+---
+
+## Load Library
+```{r message=FALSE, warning=FALSE}
+library(moments)
+library(knitr)
+```
+
+## Membuat Data Dummy
+```{r}
+kelas <- c("3SD1", "3SD2", "3SI1", "3SI2")
+data <- data.frame(ipk = sample(seq(2.5, 4, 0.01), 150, replace = TRUE),
+                   kelas = sample(kelas, 150, replace = TRUE, prob = rep(0.25, 4)))
+kable(head(data, 10))
+```
+
+## Minimal
+
+### `min(x)`
+Mencari nilai terkecil
+```{r}
+min(data$ipk)
+```
+
+### `which.min(x)`
+Mencari index nilai terkecil
+```{r}
+which.min(data$ipk)
+```
+Yang berarti nilai terkecil pada variabel `ipk` ada pada index ke-29. Kita dapat menggunakannya untuk mengambil data lengkapnya
+
+```{r}
+data[which.min(data$ipk), ]
+```
+
+## Median
+
+### `median(x)`
+```{r}
+median(data$ipk)
+```
+### Membuat fungsi median sendiri
+```{r}
+median_manual <- function(x){
+      if(!is.numeric(x)) stop("Data harus numeric")
+      
+      n <- length(x)
+      x <- sort(x)
+      if(n %% 2 == 0){
+            return((x[n/2] + x[(n/2) + 1]) / 2)
+      }
+      x[ceiling(n/2)]
+}
+```
+
+```{r}
+median_manual(data$ipk)
+```
+
+```{r, error=TRUE}
+median_manual(data$kelas)
+```
+
+## Maksimal
+
+### `max(x)`
+Mencari nilai terbesar
+```{r}
+max(data$ipk)
+```
+
+### `which.max(x)`
+Mencari index nilai terbesar
+```{r}
+which.max(data$ipk)
+```
+Yang berarti nilai terkecil pada variabel `ipk` ada pada index ke-20. Kita dapat menggunakannya untuk mengambil data lengkapnya
+
+```{r}
+data[which.max(data$ipk), ]
+```
+
+## Mean
+
+### `mean(x)`
+```{r}
+mean(data$ipk)
+```
+
+## Modus
+Membuat fungsi sendiri
+```{r}
+modus_manual <- function(x){
+      if(!is.vector(x)) stop("Data harus vector")
+      tabel_frekuesi <- table(x)
+      tabel_frekuesi <- sort(tabel_frekuesi, decreasing = TRUE)
+      modus_frekuensi <- as.numeric(tabel_frekuesi[1])
+      modus <- NULL
+      j <- 1
+      for (i in 1:length(tabel_frekuesi)){
+            if(tabel_frekuesi[i] == modus_frekuensi){
+                  modus[j] <- names(tabel_frekuesi[i])
+                  j <- j + 1
+            }
+            else
+                  break
+      }
+      list(frekuensi = modus_frekuensi, modus = modus)
+}
+```
+
+```{r}
+modus_manual(data$kelas)
+```
+
+```{r}
+modus_manual(data$ipk)
+```
+
+```{r, error=TRUE}
+modus_manual(data)
+```
+
+## Quartil
+
+### `quantile(x)`
+```{r}
+quantile(data$ipk)
+```
+```{r}
+quantile(data$ipk, probs = c(0.23, 0.27, 0.59, 0.91))
+```
+
+## Range
+Membuat fungsi sendiri
+
+```{r}
+range_manual <- function(x){
+      if(!is.numeric(x)) stop("Data harus numeric")
+      max(x) - min(x)
+}
+```
+
+```{r}
+range_manual(data$ipk)
+```
+
+```{r, error=TRUE}
+range_manual(data$kelas)
+```
+
+## Interquartil Range (IQR)
+Membuat fungsi sendiri
+
+```{r}
+iqr_manual <- function(x){
+      if(!is.numeric(x)) stop("Data harus numeric")
+      q3 <- quantile(x, probs = c(0.75))
+      q1 <- quantile(x, probs = c(0.25))
+      as.numeric(q3 - q1)
+}
+```
+
+```{r}
+iqr_manual(data$ipk)
+```
+```{r, error=TRUE}
+iqr_manual(data$kelas)
+```
+
+## Jumlah
+```{r}
+sum(data$ipk)
+```
+## Sample Variance
+
+### `var(x)`
+```{r}
+var(data$ipk)
+```
+### Membuat Fungsi Sendiri
+```{r}
+var_manual <- function(x){
+      if(!is.numeric(x)) stop("Data harus numeric")
+      (sum((x - mean(x))^2)) / (length(x) - 1)
+}
+```
+
+```{r}
+var_manual(data$ipk)
+```
+
+```{r, error=TRUE}
+var_manual(data$kelas)
+```
+
+## Standard Deviasi
+
+### `sd(x)`
+```{r}
+sd(data$ipk)
+```
+
+### Membuat Fungsi Sendiri
+```{r}
+sd_manual <- function(x){
+      if(!is.numeric(x)) stop("Data harus numeric")
+      varians <- (sum((x - mean(x))^2)) / (length(x) - 1)
+      sqrt(varians)
+}
+```
+
+```{r}
+sd_manual(data$ipk)
+```
+
+```{r, error=TRUE}
+sd_manual(data$kelas)
+```
+
+## Skewness
+Untuk menghitung skewness dibutuhkan fungsi dari library `moments`. Silahkan install terlebih dahulu `install.packages("moments")`
+
+### `skewness(x)`
+```{r}
+skewness(data$ipk)
+```
+
+### Membuat Fungsi Sendiri
+```{r}
+skewness_manual <- function(x){
+      if(!is.numeric(x)) stop("Data harus numeric")
+      n <- length(x)
+      pembilang <- sum((x - mean(x))^3) / n
+      penyebut <- (sum((x - mean(x))^2 / n))^(3/2)
+      pembilang /penyebut
+}
+```
+
+```{r}
+skewness_manual(data$ipk)
+```
+
+```{r, error=TRUE}
+skewness_manual(data$kelas)
+```
+
+## Kurtosis
+Untuk menghitung kurtosis dibutuhkan fungsi dari library `moments`. Silahkan install terlebih dahulu `install.packages("moments")`
+
+### `kurtosis(x)`
+```{r}
+kurtosis(data$ipk)
+```
+
+### Membuat Fungsi Sendiri
+```{r}
+kurtosis_manual <- function(x){
+      if(!is.numeric(x)) stop("Data harus numeric")
+      n <- length(x)
+      pembilang <- sum((x - mean(x))^4) / n
+      penyebut <- (sum((x - mean(x))^2 / n))^(2)
+      pembilang /penyebut
+}
+```
+
+```{r}
+kurtosis_manual(data$ipk)
+```
+
+```{r, error=TRUE}
+kurtosis_manual(data$kelas)
+```
+
+
+## Tambahan
+
+### `summary(x)`
+```{r}
+summary(data)
+```
+
+### `str(x)`
+```{r}
+str(data)
+```
+
+### `dplyr::glimpse(x)`
+```{r}
+dplyr::glimpse(data)
+```
+
+
+
