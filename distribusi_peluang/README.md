@@ -2,6 +2,8 @@
 
 Materi
 ------
+**Acuan Materi**
+1. [Variabel Random dan Distribusi Peluang](https://www.slideshare.net/audityasutarto/variabel-random-distribusi-peluang)
 
 Secara garis besar setiap function distibusi peluang akan diawali oleh
 `d`, `p`, `q`, dan `r`, kemudian diteruskan dengan nama dari
