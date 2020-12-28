@@ -1,0 +1,160 @@
+---
+title: "Anova"
+author: "Tim Modul"
+date: "12/28/2020"
+output: 
+      md_document:
+          variant: markdown_github
+---
+
+```{r, include=FALSE}
+library(knitr)
+```
+
+# Materi
+**Acuan Materi*
+
+1. [One-Way ANOVA Test in R](http://www.sthda.com/english/wiki/one-way-anova-test-in-r)
+2. [Two-Way ANOVA Test in R](http://www.sthda.com/english/wiki/two-way-anova-test-in-r)
+3. [One-Way vs Two-Way ANOVA: Differences, Assumptions and Hypotheses](https://www.technologynetworks.com/informatics/articles/one-way-vs-two-way-anova-definition-differences-assumptions-and-hypotheses-306553)
+4. [Analisis Ragam / Analysis of variance (Anova) dua arah dengan interaksi](https://statistikceria.blogspot.com/2014/01/analisis-ragam-analysis-of-variance-anova-dua-arah-dengan-interaksi.html)
+5. [Understanding Interaction Effects in Statistics](https://statisticsbyjim.com/regression/interaction-effects/)
+
+# One Way Anova
+Pengujian ini digunakan pada data kuantitatif untuk menentukan apakah ada perbedaan diantara beberapa populasi rata-ratanya. Nama dari pengujian yaitu ANOVA (analysis of variances) diambil berdasarkan cara perhitungan yang digunakan yaitu suatu teknik yang menganalisa variasi data untuk menentukan apakah kita dapat menyatakan ada perbedaan diantara rata-rata populasi yang kita teliti. Asumsi pada uji Anova ini adalah **data bersifat independent**, **berdistribusi normal**, dan **memiliki varians yang sama**. Jika asumsi kenormalan dan varians tidak terpenuhi maka uji ANOVA dapat diganti dengan uji Kruskal-Wallis (uji non-parametrik). Hipotesa untuk pengujian k populasi ditulis sebagai berikut:
+
+- 𝐻0: 𝜇1=𝜇2= ... =𝜇𝑘
+- 𝐻1: Setidaknya ada satu 𝜇𝑖 yang tidak sama
+
+```{r}
+my_data <- PlantGrowth
+kable(dplyr::sample_n(my_data, 10))
+```
+
+## Uji Anova
+
+Untuk melakukan analisis anova dapat menggunakan fungsi `aov(y ~ x, data)`
+
+```{r}
+res.aov <- aov(weight ~ group, data = my_data)
+summary(res.aov)
+```
+
+Telihat bahwa p-value sebesar 0.0159, sehingga dengantingkat signifikansi 5%, terdapat rata-rata yang berbeda
+
+## Posthoc Test
+**Jika dalam pengujian ANOVA 𝑯𝟎 ditolak**, maka untuk mengetahui seberapa besar pengaruhnya, maka dilakukan uji menggunakan analisis perbandingan ganda atau posthoc test. Syarat dapat dilakukannya pengujian perbandingan ganda ini adalah jumlah level faktornya (perlakuan) lebih dari dua. Salah satu uji perbandingan ganda adalah uji Tukey.
+
+```{r}
+TukeyHSD(res.aov)
+```
+
+Berdasarkan p-value yang diperoleh, terlihat bahwa perbedaan rata-rata yang signifikan hanya terdapat pada grup `trt2` dan `trt2` dengan p-value adjusted sebesar `0.012`
+
+# Two Way Anova
+Asumsi pada Two-Way Anova sama seperti pada One-Way Anova
+
+## Preprocessing
+```{r}
+my_data <- ToothGrowth
+kable(dplyr::sample_n(my_data, 10))
+```
+
+Konversi variabel `dose` ke factor
+```{r}
+my_data$dose <- factor(my_data$dose, 
+                  levels = c(0.5, 1, 2),
+                  labels = c("D0.5", "D1", "D2"))
+kable(head(my_data))
+```
+
+## Tanpa Interaksi
+```{r}
+res.aov2 <- aov(len ~ supp + dose, data = my_data)
+summary(res.aov2)
+```
+
+Terlihat bahwa kedua grup signifikan, yang berarti variabel `supp` dan `dose` memberikan dampak pada rata-rata tooth length
+
+## Dengan Interaksi
+```{r}
+res.aov3 <- aov(len ~ supp + dose + supp:dose, data = my_data)
+summary(res.aov3)
+```
+
+Terlihat bahwa efek interaksi juga signifikan, yang berarti hubungan antara tooth length dan `supp` bergantung pada variabel `dose`
+
+## Posthoc Test
+```{r}
+TukeyHSD(res.aov3, which = "dose")
+```
+Terlihat bahwa semuanya signifikan dengan adjusted p-value < 0.05. Yang berarti rata-rata dari tiap dosis berbeda dan jika diliat lebih jauh bertambahnya dosis rata-ratanya semakin tinggi.
+
+```{r}
+library("ggpubr")
+ggboxplot(my_data, x = "dose", y = "len", color = "supp",
+          palette = c("#00AFBB", "#E7B800"))
+```
+
+# Pembahasan Latihan Soal
+Dengan data_dummy_komstat.csv dan 𝛼=0.025
+```{r}
+data <- read.csv("https://raw.githubusercontent.com/modul60stis/data/main/data_dummy_komstat.csv")
+kable(head(data, 10))
+```
+
+## Nomor 1
+Apakah ada pengaruh yang berbeda dari metode pengajaran terhadap nilai yang dipeorleh (variabel sesudah)?
+
+### Pembahasan Nomor 1
+
+#### Eksplorasi Data
+```{r message=FALSE, warning=FALSE}
+library("ggpubr")
+ggboxplot(data, x = "metode", y = "sesudah")
+```
+
+Secara visual tidak terlihat perbedaan rata-rata yang terlalu signifikan
+
+#### Uji Normalitas
+```{r}
+tapply(data$sesudah, data$metode, shapiro.test)
+```
+
+Terlihat bahawa p-value lebih besar dari 0.025, sehingga dapat disimpulkan data berdistribusi normal untuk semua metode
+
+#### Uji Kesamaan Varias
+```{r message=FALSE, warning=FALSE}
+library(car)
+leveneTest(sesudah ~ metode, data = data)
+```
+
+karena p-value lebih besar dari 0.025 maka gagal tolak H0, yang berarti variansnya sama.
+
+#### Uji Anova
+Karena semua asumsi telah terpenuhi maka dapat dilakukan uji anova
+
+```{r}
+res.aov <- aov(sesudah ~ metode, data = data)
+summary(res.aov)
+```
+
+di peroleh p-value 0.0523, yang berarti gagal tolak H0 untuk alpa 0.025. Sehingga dapat disimpulkan bahwa tidak ada pengaruh yang signifikan dari metode pengajaran terhadap nilai yang dipeorleh (variabel sesudah).
+
+Karena gagal tolak H0 maka tidak perlu dilakukan uji perbandingan ganda atau posthoc test
+
+## Nomor 2
+Apakah metode pengajaran dan jenis kelamin mempengaruhi nilai yang diperoleh? Liat juga interaksi antara metode pengajaran dan jenis kelamin!
+
+### Pembahasan Nomor 2
+
+Silahkan eksplore terlebih dahulu datanya kemudian uji kenormalan untuk setiap kelompok dan uji kesamaan varians untuk semua kelompok.
+
+Disini saya akan berasumsi bahwa data telah normal dan memiliki varians yang sama sehingga dapat dilanjutkan dengan analisis anova dua arah. Model yang akan dibuat adalah yang tanpa interaksi
+
+```{r}
+res.aov <- aov(sesudah ~ metode + jenis_kelamin, data = data)
+summary(res.aov)
+```
+
+Terlihat bahwa tidak ada yang signifikan pada alpa 0.025. Hal ini menunjukkan bahwa jenis kelamin dan metode pengajaran tidak berpengaruh signifikan terhadap rata-rata nilai yang diperoleh
