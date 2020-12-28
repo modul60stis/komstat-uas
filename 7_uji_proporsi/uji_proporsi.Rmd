@@ -1,0 +1,180 @@
+---
+title: "Uji Proporsi"
+author: "Tim Modul"
+date: "12/28/2020"
+output: 
+      md_document:
+          variant: markdown_github
+---
+
+```{r, include=FALSE}
+library(knitr)
+```
+
+# Materi
+**Acuan Materi**
+
+1. [One-Proportion Z-Test in R](http://www.sthda.com/english/wiki/one-proportion-z-test-in-r)
+2. [Two-Proportions Z-Test in R](http://www.sthda.com/english/wiki/two-proportions-z-test-in-r)
+
+# Uji Satu Populasi
+
+𝐻0: 𝑝= 𝑝0; 𝐻1:𝑝 ≠𝑝0
+𝐻0: 𝑝≤ 𝑝0; 𝐻1:𝑝>𝑝0
+𝐻0: 𝑝≥ 𝑝0; 𝐻1:𝑝<𝑝0
+
+## Membuat Fungsi Sendiri
+```{r}
+prop.test_satu_pop <-  function(x, n, p, alpa = 0.05, alternative = "two.sided"){
+      p_cap <- x / n
+      se <- sqrt(p * (1 - p) / n)
+      zhitung <- (p_cap - p) / se
+      
+      if(alternative == "less"){
+            alternative <- paste("proportion less than", p)
+            p_value <- pnorm(zhitung)
+      } else if(alternative == "greater"){
+            alternative <- paste("proportion greater than", p)
+            p_value <- pnorm(zhitung, lower.tail = FALSE)
+      } else {
+            alternative <- paste("proportion not equal", p)
+            p_value <- 2 * pnorm(abs(zhitung), lower.tail = FALSE)
+      }
+      
+      keputusan <- if(p_value < alpa){
+            "Tolak H0"
+      } else {
+            "Gagal Tolak H0"
+      }
+      
+      list(statistic = zhitung,
+           p_value = p_value,
+           alpa = alpa,
+           keputusan = keputusan,
+           alternative = alternative,
+           p_cap = p_cap,
+           p0 = p,
+           x = x,
+           n = n)
+}
+```
+
+## Mencoba Fungsi Sendiri
+```{r}
+result <- prop.test_satu_pop(x = 95, n = 160, p = 0.5)
+kable(data.frame(result))
+```
+
+## Menggunakan Fungsi `prop.test`
+```{r}
+prop.test(x = 95, n = 160, p = 0.5, correct = FALSE)
+```
+
+Perbedaan dari fungsi yang dibuat sendiri dengan fungsi `prop.test` adalah fungsi `prop.test` menggunakan pendekatan Chi-Square. Hasil p-value akan sama, karena distribus `Z^2` sama dengan distributsi `Chi-Square`
+
+# Uji Dua Populasi
+
+## Membuat Fungsi Sendiri
+```{r}
+prop.test_dua_pop <-  function(x1, n1, x2, n2, alpa = 0.05, alternative = "two.sided"){
+      p_cap1 <- x1 / n1
+      p_cap2 <- x2 / n2
+      p_gab <- ((n1 * p_cap1) + (n2 * p_cap2)) / (n1 + n2)
+      se <- sqrt(p_gab * (1 - p_gab) * ((1/n1) + (1/n2)))
+      zhitung <- (p_cap1 - p_cap2) / se
+      
+      p_value <- NULL
+      if(alternative == "less"){
+            p_value <- pnorm(zhitung)
+      } else if(alternative == "greater"){
+            p_value <- pnorm(zhitung, lower.tail = FALSE)
+      } else {
+            p_value <- 2 * pnorm(abs(zhitung), lower.tail = FALSE)
+      }
+      
+      keputusan <- if(p_value < alpa){
+            "Tolak H0"
+      } else {
+            "Gagal Tolak H0"
+      }
+      
+      list(statistic = zhitung,
+           p_value = p_value,
+           alpa = alpa,
+           keputusan = keputusan,
+           alternative = alternative,
+           p_cap1 = p_cap1,
+           p_cap2 = p_cap2,
+           x1 = x1,
+           x2 = x2,
+           n1 = n1,
+           n2 = n2)
+}
+```
+
+## Mencoba Fungsi Buatan
+```{r}
+result <- prop.test_dua_pop(490, 500, 480, 500)
+kable(data.frame(result))
+```
+
+## Menggunakan Fungsi `prop.test`
+```{r}
+prop.test(x = c(490, 480), n = c(500, 500), correct = FALSE)
+```
+Perbedaan dari fungsi yang dibuat sendiri dengan fungsi `prop.test` adalah fungsi `prop.test` menggunakan pendekatan Chi-Square. Hasil p-value akan sama, karena distribusi `Z^2` sama dengan distributsi `Chi-Square`
+
+# Pembahasan Latihan Soal
+Dengan menggunakan data_dummy_komstat.csv dan tingkat signifikansi 5%.
+```{r}
+alpa <- 0.05
+data <- read.csv("https://raw.githubusercontent.com/modul60stis/data/main/data_dummy_komstat.csv")
+kable(head(data, 10))
+```
+
+
+
+## Nomor 1
+Jika dilihat berdasarkan nilai sesudah apakah proporsi mahasiswa yang puas lebih dari 0.6?
+
+### Pembahasan Nomor 1
+```{r}
+table(data$puas)
+```
+
+Terlihat bahwa ada 639 mahasiswa yang puas dari 1127 mahasiswa
+
+```{r}
+x <- 639
+n <- 1127
+p <- 0.6
+result <- prop.test_satu_pop(x, n, p, alpa = alpa, alternative = "greater")
+kable(data.frame(result))
+```
+
+```{r}
+prop.test(x, n, p, alternative = "greater", correct = FALSE)
+```
+
+Diperoleh p-value sebesar 0.9881, dengan tingkat signifikansi 5% maka gagal tolak H0, yang berarti tidak terdapat bukti yang cukup untuk mengatakan bahwa proporsi mahasiswa yang puas lebih dari 0.6
+
+## Nomor 2
+Jika dilihat berdasarkan nilai sesudah apakah ada perbedaan proporsi antara laki-laki dan perempuan yang puas terhadap metode pengajaran?
+
+### Pembahasan Nomor 2
+```{r}
+table(data$puas, data$jenis_kelamin)
+```
+
+Terlihat bahwa laki-laki yang puas ada sebanyak 335 dari 532 mahasiswa dan perempuan ada sebanyak 358 dari 595 mahasiswa
+
+```{r}
+result <- prop.test_dua_pop(335, 532, 358, 595)
+kable(data.frame(result))
+```
+
+```{r}
+prop.test(x = c(335, 358), n = c(532, 595), correct = FALSE)
+```
+
+Terlihat bahwa p-value lebih besar dari 0.05 sehingga gagal tolak H0, yang berarti dapat ditarik kesimpulan bahwa proporsi antara laki-laki dan perempuan yang puas terhadap metode pengajaran tidak berbeda.
