@@ -1,0 +1,511 @@
+---
+title: "Uji Rata-Rata"
+author: "Tim Modul"
+date: "12/28/2020"
+output: 
+      md_document:
+          variant: markdown_github
+---
+
+```{r, include=FALSE}
+library(knitr)
+```
+
+# Materi
+**Acuan Materi**
+
+1. [Student's t-test in R and by hand](https://statsandr.com/blog/student-s-t-test-in-r-and-by-hand-how-to-compare-two-groups-under-different-scenarios/#scenario-1-independent-samples-with-2-known-variances-1)
+2. [t test](http://www.sthda.com/english/wiki/t-test#:~:text=t%20test%20is%20used%20to,to%20a%20theoretical%20value%20mu.&text=The%20one%2Dsample%20t%20test,two%20unrelated%20groups%20of%20samples.)
+
+Uji beda T (Uji T) adalah salah satu teknik analisis dalam ilmu statistika yang digunakan untuk mengetahui signifikansi perbedaan dan membuat kesimpulan tentang suatu populasi berdasarkan data dari sampel yang diambil dari populasi itu. Teknik uji beda t dilakukan atas data rasio atau interval. Teknik yang dilakukan dengan membandingkan nilai mean. Statistik uji ini digunakan dalam pengujian hipotesis. Asumsi/syarat uji –t :
+
+- Data berdistribusi normal
+- Skala rasio/Interval
+- Sampel independen
+
+# Membuat Data Dummy
+```{r}
+set.seed(220037)
+x <- rnorm(100, mean = 1, sd = 2)
+set.seed(220037)
+y <- rnorm(100, mean = 0, sd = 1)
+```
+
+# Uji Satu Populasi
+𝐻0: 𝜇= 𝜇0
+𝐻1: 𝜇≠ 𝜇0 atau 𝜇< 𝜇0 atau 𝜇> 𝜇0
+
+## Varians Diketahui
+
+### Membuat Fungsi Sendiri
+```{r}
+t.test_satu_pop_diketahui <- function(x, sigma.squared, miu0 = 0, alpa = 0.05, alternative = "two.sided"){
+      n <-length(x)
+      rata2 <- mean(x)
+      zhitung <- (rata2 - miu0) / (sqrt(sigma.squared / n))
+      if(alternative == "less"){
+            alternative <- paste("less than", miu0)
+            p_value <- pnorm(zhitung)
+      } else if(alternative == "greater"){
+            alternative <- paste("greater than", miu0)
+            p_value <- pnorm(zhitung, lower.tail = FALSE)
+      } else {
+            alternative <- paste("not equal", miu0)
+            p_value <- 2 * pnorm(abs(zhitung), lower.tail = FALSE)
+      }
+      
+      keputusan <- if(p_value < alpa){
+            "Tolak H0"
+      } else {
+            "Gagal Tolak H0"
+      }
+      
+      list(statistic = zhitung,
+           p_value = p_value,
+           n = n,
+           mean_sample = rata2,
+           keputusan = keputusan,
+           alpa = alpa,
+           alternative = alternative,
+           var_pop = sigma.squared)
+}
+```
+
+### Mencoba Fungsi Buatan
+```{r}
+result <- t.test_satu_pop_diketahui(x, sigma.squared = 5, miu0 = 1)
+kable(data.frame(result))
+```
+
+
+## Varians Tidak Diketahui
+
+### Membuat Fungsi Sendiri
+```{r}
+t.test_satu_pop_tidak_diketahui <- function(x, miu0 = 0, alpa = 0.05, alternative = "two.sided"){
+      n <-length(x)
+      df <- n - 1
+      rata2 <- mean(x)
+      var_sample <- var(x)
+      thitung <- (rata2 - miu0) / (sqrt(var_sample / n))
+      if(alternative == "less"){
+            alternative <- paste("less than", miu0)
+            p_value <- pt(thitung, df)
+      } else if(alternative == "greater"){
+            alternative <- paste("greater than", miu0)
+            p_value <- pt(thitung, df, lower.tail = FALSE)
+      } else {
+            alternative <- paste("not equal", miu0)
+            p_value <- 2 * pt(abs(thitung), df, lower.tail = FALSE)
+      }
+      
+      keputusan <- if(p_value < alpa){
+            "Tolak H0"
+      } else {
+            "Gagal Tolak H0"
+      }
+      
+      list(statistic = thitung,
+           p_value = p_value,
+           n = n,
+           df = df,
+           mean_sample = rata2,
+           keputusan = keputusan,
+           alpa = alpa,
+           alternative = alternative,
+           var_sample = var_sample)
+}
+```
+
+### Mencoba Fungsi Buatan
+```{r}
+result <- t.test_satu_pop_tidak_diketahui(x, miu0 = 0.9, alternative = "less")
+kable(data.frame(result))
+```
+
+### Menggunakan Fungsi `t.test()`
+```{r}
+t.test(x, mu = 0.9 , alternative = "less")
+```
+
+# Uji Dua Populasi Independent
+
+𝐻0: 𝜇1−𝜇2 = 𝑑0
+𝐻1: 𝜇1−𝜇2 ≠ 𝑑0 atau 𝜇1−𝜇2< 𝑑0 atau 𝜇1−𝜇2> 𝑑0
+
+## Varians Diketahui
+```{r}
+t.test_dua_pop_diketahui <- function(x, y, V1, V2, miu0 = 0, alpa = 0.05, alternative = "two.sided") {
+      M1 <- mean(x)
+      M2 <- mean(y)
+      n1 <- length(x)
+      n2 <- length(y)
+      sigma1 <- sqrt(V1)
+      sigma2 <- sqrt(V2)
+      
+      se <- sqrt((V1 / n1) + (V2 / n2))
+      statistic <- (M1 - M2 - miu0) / se
+      
+      p_value <- if (alternative == "greater") {
+            alternative <- paste("difference mean greater than", miu0)
+            pnorm(statistic, lower.tail = FALSE)
+      } else if (alternative == "less") {
+            alternative <- paste("difference mean less than", miu0)
+            pnorm(statistic, lower.tail = TRUE)
+      } else {
+            alternative <- paste("difference mean not equal", miu0)
+            2 * pnorm(abs(statistic), lower.tail = FALSE)
+      }
+      
+      keputusan <- if(p_value < alpa){
+            "Tolak H0"
+      } else {
+            "Gagal Tolak H0"
+      }
+      
+      list(statistic = statistic, 
+           p.value = p_value,
+           alpa = alpa,
+           keputusan = keputusan,
+           alternative = alternative,
+           mean1 = M1, 
+           mean2 = M2, 
+           sigma1 = sigma1, 
+           sigma2 = sigma2,
+           n1 = n1,
+           n2 = n2,
+           se = se)
+}
+```
+
+### Mencoba Fungsi Buatan
+```{r}
+result <- t.test_dua_pop_diketahui(x, y, 2, 1, miu0 = 1)
+kable(data.frame(result))
+```
+
+## Varians Tidak Diketahui dan Diasumsikan Sama
+
+### Membuat Fungsi Sendiri
+```{r}
+t.test_var_equal <- function(x, y, miu0 = 0, alpa = 0.05, alternative = "two.sided"){
+      M1 <- mean(x)
+      M2 <- mean(y)
+      var1 <- var(x)
+      var2 <- var(y)
+      n1 <- length(x)
+      n2 <- length(y)
+      df <- n1 + n2 - 2
+      
+      tmp1 <- (n1 -1) * var1
+      tmp2 <- (n2 - 1) * var2
+      sp <- sqrt((tmp1 + tmp2) / df)
+      
+      se <- sp * sqrt((1/n1) + (1/n2))
+      
+      thitung <- (M1 - M2 - miu0) / se
+      
+      p_value <- if (alternative == "greater") {
+            alternative <- paste("difference mean greater than", miu0)
+            pt(thitung, df, lower.tail = FALSE)
+      } else if (alternative == "less") {
+            alternative <- paste("difference mean less than", miu0)
+            pt(thitung, df, lower.tail = TRUE)
+      } else {
+            alternative <- paste("difference mean not equal", miu0)
+            2 * pt(abs(thitung), df, lower.tail = FALSE)
+      }
+      
+      keputusan <- if(p_value < alpa){
+            "Tolak H0"
+      } else {
+            "Gagal Tolak H0"
+      }
+      
+      list(statistic = thitung, 
+           p.value = p_value,
+           alpa = alpa,
+           keputusan = keputusan,
+           alternative = alternative,
+           df = df,
+           mean1 = M1, 
+           mean2 = M2, 
+           var1 = var1, 
+           var2 = var2,
+           n1 = n1,
+           n2 = n2,
+           se = se)
+}
+```
+
+### Mencoba Fungsi Buatan
+```{r}
+result <- t.test_var_equal(x, y, alternative = "greater", miu0 = 0.5)
+kable(data.frame(result))
+```
+
+### Menggunakan Fungsi `t.test`
+```{r}
+t.test(x, y, var.equal = TRUE, alternative = "greater", mu = 0.5)
+```
+
+## Varians Tidak Diketahui dan Diasumsikan Tidak Sama
+
+### Membuat Fungsi Sendiri
+```{r}
+t.test_var_not_equal <- function(x, y, miu0 = 0, alpa = 0.05, alternative = "two.sided"){
+      M1 <- mean(x)
+      M2 <- mean(y)
+      var1 <- var(x)
+      var2 <- var(y)
+      n1 <- length(x)
+      n2 <- length(y)
+      
+      tmp1 <- var1 / n1
+      tmp2 <- var2 / n2
+      se <- sqrt(tmp1 + tmp2)
+      
+      df <- (tmp1 + tmp2)^2
+      tmp1 <- tmp1^2 / (n1-1)
+      tmp2 <- tmp2^2 / (n2-1)
+      df <- df / (tmp1 + tmp2)
+      
+      thitung <- (M1 - M2 - miu0) / se
+      
+      p_value <- if (alternative == "greater") {
+            alternative <- paste("difference mean greater than", miu0)
+            pt(thitung, df, lower.tail = FALSE)
+      } else if (alternative == "less") {
+            alternative <- paste("difference mean less than", miu0)
+            pt(thitung, df, lower.tail = TRUE)
+      } else {
+            alternative <- paste("difference mean not equal", miu0)
+            2 * pt(abs(thitung), df, lower.tail = FALSE)
+      }
+      
+      keputusan <- if(p_value < alpa){
+            "Tolak H0"
+      } else {
+            "Gagal Tolak H0"
+      }
+      
+      list(statistic = thitung, 
+           p.value = p_value,
+           alpa = alpa,
+           keputusan = keputusan,
+           alternative = alternative,
+           df = df,
+           mean1 = M1, 
+           mean2 = M2, 
+           var1 = var1, 
+           var2 = var2,
+           n1 = n1,
+           n2 = n2,
+           se = se)
+}
+```
+
+### Mencoba Fungsi Buatan
+```{r}
+result <- t.test_var_not_equal(x, y, miu0 = 1.5)
+kable(data.frame(result))
+```
+
+### Menggunkan Fungsi `t.test`
+```{r}
+t.test(x, y, var.equal = FALSE, mu = 1.5)
+```
+
+# Uji Dua Populasi Dependent
+
+## Membuat Fungsi Sendiri
+```{r}
+t.test_paired <- function(x, y, miu0 = 0, alpa = 0.05, alternative = "two.sided"){
+      d <- x - y
+      n <-length(d)
+      df <- n - 1
+      rata2_d <- mean(d)
+      var_d <- var(d)
+      thitung <- (rata2_d - miu0) / (sqrt(var_d / n))
+      if(alternative == "less"){
+            alternative <- paste("less than", miu0)
+            p_value <- pt(thitung, df)
+      } else if(alternative == "greater"){
+            alternative <- paste("greater than", miu0)
+            p_value <- pt(thitung, df, lower.tail = FALSE)
+      } else {
+            alternative <- paste("not equal", miu0)
+            p_value <- 2 * pt(abs(thitung), df, lower.tail = FALSE)
+      }
+      
+      keputusan <- if(p_value < alpa){
+            "Tolak H0"
+      } else {
+            "Gagal Tolak H0"
+      }
+      
+      list(statistic = thitung,
+           p_value = p_value,
+           n = n,
+           df = df,
+           mean_sample_d = rata2_d,
+           keputusan = keputusan,
+           alpa = alpa,
+           alternative = alternative,
+           var_sample_d = var_d)
+}
+```
+
+## Mencoba Fungsi Buatan
+```{r}
+result <- t.test_paired(x, y, alternative = "less", miu0 = 1)
+kable(data.frame(result))
+```
+
+## Menggunakan Fungsi `t.test`
+```{r}
+t.test(x, y, paired = TRUE, alternative = "less", mu = 1)
+```
+
+# Pembahasan Latihan Soal
+
+Dengan menggunakan data_dummy_komstat.csv
+```{r}
+data <- read.csv("https://raw.githubusercontent.com/modul60stis/data/main/data_dummy_komstat.csv")
+kable(head(data, 10))
+```
+
+## Nomor 1
+Dengan 𝛼=0.05, ujilah apakah variabel sebelum memiliki 𝜇>65, jika diketahui 𝜎=10?
+
+### Pembahasan Nomor 1
+
+#### Uji Kenormalan
+```{r}
+shapiro.test(data$sebelum)
+```
+Data berdistribusi normal
+
+```{r}
+result <- t.test_satu_pop_diketahui(data$sebelum, 
+                                    sigma.squared =  100, 
+                                    miu0 = 65, 
+                                    alternative = "greater")
+kable(data.frame(result))
+```
+
+Dengan tingkat signifikansi 5% variabel `sebelum` tidak memiliki `𝜇>65`
+
+
+## Nomor 2
+Dengan 𝛼=0.08, Ujilah apakah variabel sesudah memiliki 𝜇<65, jika 𝜎 tidak diketahui?
+
+### Pembahasan Nomor 2
+
+#### Uji kenormalan
+```{r}
+shapiro.test(data$sesudah)
+```
+
+Data berdistribusi normal
+
+```{r}
+result <- t.test_satu_pop_tidak_diketahui(data$sesudah, 
+                                          miu0 = 65, 
+                                          alternative = "less",
+                                          alpa = 0.08)
+kable(data.frame(result))
+```
+
+Dengan tingkat signifikansi 8% variabel `sesudah` tidak memiliki `𝜇<65`
+
+## Nomor 3
+Dengan 𝛼=0.10, ujilah apakah variabel sesudah dengan metode A memiliki rata-rata yang sama dengan variabel sesudah dengan metode C?
+
+### Pembahasan Nomor 2
+
+#### Split data
+```{r}
+splitData <- split(data$sesudah, data$metode)
+a <- splitData$A
+c <- splitData$C
+```
+
+#### Uji kenormalan 
+```{r}
+shapiro.test(a)
+```
+```{r}
+shapiro.test(c)
+```
+Keduanya berdistribusi Normal
+
+#### Uji kesamaan varians
+```{r}
+var.test(a, c)
+```
+Terlihat bahwa p-value lebih besar dari 0.10 sehingga gagal tolak H0 yang berarti varians sama
+
+```{r}
+t.test(a, c, var.equal = TRUE)
+```
+
+```{r}
+result <- t.test_var_equal(a, c, alpa = 0.10)
+kable(data.frame(result))
+```
+
+Diperoleh p-value yang lebih kecil dari 0.10, sehingga tolak H0, yang berarti variabel sesudah untuk metode A dan C memiliki rata-rata yang berbeda
+
+## Nomor 4
+Dengan 𝛼=0.05, ujilah apakah variabel sesudah memiliki rata-rata yang lebih besar daripada variabel sebelum?
+
+### Pembahasan Nomor 4
+Variabel sebelum dan sesudah adalah variabel yang saling berkaitan
+
+#### Uji Kenormalan
+```{r}
+shapiro.test(data$sebelum)
+```
+```{r}
+shapiro.test(data$sesudah)
+```
+
+Keduanya berdistribus normal
+
+```{r}
+t.test(data$sesudah, data$sebelum, paired = TRUE, alternative = "greater")
+```
+
+```{r}
+result <- t.test_paired(data$sesudah, data$sebelum, alternative = "greater")
+kable(data.frame(result))
+```
+
+Tidak terbukti dengan alpa 5% bahwa rata-rata variabel `sesudah` lebih besar dari `sebelum`
+
+## Nomor 5
+Dengan 𝛼=0.01, ujilah apakah selisih niliai sesudah dan sebelum jika dikelompokkan berdasarkan jenis kelamin memiliki nilai rata-rata yang sama?
+
+### Pembahasan Nomor 5
+
+#### Split Data
+```{r}
+d <- data$sesudah - data$sebelum
+splitData <- split(d, data$jenis_kelamin)
+cowo <- splitData$`Laki-Laki`
+cewe <-  splitData$Perempuan
+```
+
+#### Uji Kenormalan
+```{r}
+shapiro.test(cowo)
+```
+
+```{r}
+shapiro.test(cewe)
+```
+
+Terlihat bahwa data tidak normal. Apa yang harus dilakukan? Apakah boleh dilanjutkan? **Saya juga tidak tau** :v
+
+Apakah Central Limit Theorem bisa digunakan? Silahkan baca disini [You can’t assume a normal distribution for your data with N>30](http://psychbrief.com/cant-assume-normal-distribution-n30/)
