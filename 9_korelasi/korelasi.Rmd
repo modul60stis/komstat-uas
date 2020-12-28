@@ -1,0 +1,169 @@
+---
+title: "Korelasi"
+author: "Tim Modul"
+date: "12/28/2020"
+output: html_document
+---
+
+```{r, include=FALSE}
+library(knitr)
+```
+
+
+# Acuan Materi
+1. [Correlation Test Between Two Variables in R](http://www.sthda.com/english/wiki/correlation-test-between-two-variables-in-r)
+
+```{r}
+my_data <- mtcars
+kable(dplyr::sample_n(my_data, 10))
+```
+
+# Korelasi Pearson
+Koefisien korelasi Pearson dapat digunakan untuk menyatakan besar hubungan linier antara dua variabel ketika data adalah data kuantitatif (data berskala interval atau rasio) dan kedua variabel adalah bivariat yang **berdistribusi normal**.
+
+## Hitung Korelasi
+```{r}
+cor(my_data$wt, my_data$mpg, method = "pearson")
+```
+## Pearson Test
+```{r}
+res <- cor.test(my_data$wt, my_data$mpg, method = "pearson")
+res
+```
+
+Terlihat bahwa p-value sangat kecil yang berarti tolak H0, sehingga dapat disimpulkan terdapat korelasi antara variabel `wt` dan `mpg`
+
+## Visualisasi
+```{r message=FALSE, warning=FALSE}
+library("ggpubr")
+ggscatter(my_data, x = "mpg", y = "wt", 
+          add = "reg.line", conf.int = TRUE, 
+          cor.coef = TRUE, cor.method = "pearson",
+          xlab = "Miles/(US) gallon", ylab = "Weight (1000 lbs)")
+```
+
+# Korelasi Spearman
+Statistik ini merupakan suatu ukuran asosiasi atau hubungan yang dapat digunakan pada kondisi satu atau kedua variabel yang diukur adalah skala ordinal (berbentuk ranking) atau kedua variabel adalah kuantitatif namun **kondisi normal tidak terpenuhi**.
+
+## Hitung Korelasi
+```{r}
+cor(my_data$drat, my_data$qsec, method = "spearman")
+```
+## Spearman Test
+```{r message=FALSE, warning=FALSE}
+res <- cor.test(my_data$drat, my_data$qsec, method = "spearman")
+res
+```
+
+Terlihat bahwa p-value sangat besar, sehingga gagal tolak H0, yang berarti berdasarkan Spearman test tidak terdapat korelasi antara variabel `drat` dan `qsec`
+
+## Visualisasi
+```{r message=FALSE, warning=FALSE}
+library("ggpubr")
+ggscatter(my_data, x = "drat", y = "qsec", 
+          add = "reg.line", conf.int = TRUE, 
+          cor.coef = TRUE, cor.method = "spearman")
+```
+
+# Pembahasan Latihan Soal
+Dengan menggunakan data_dummy_komstat.csv dan 𝛼=0.05
+```{r}
+data <- read.csv("https://raw.githubusercontent.com/modul60stis/data/main/data_dummy_komstat.csv")
+kable(head(data, 10))
+```
+
+
+## Nomor 1
+Hitung dan ujilah, korelasi dari variabel sebelum dan sesudah.
+
+### Pembahasan Nomor 1
+
+#### Cek Normalitas
+```{r}
+shapiro.test(data$sebelum)
+```
+```{r}
+shapiro.test(data$sesudah)
+```
+
+Terlihat bahwa kedua variabel berdistribusi normal sehingga dapat diuji dengan menggunakan korelasi Pearson
+
+#### Hitung Korelasi
+```{r}
+cor(data$sebelum, data$sesudah, method = "pearson")
+```
+
+Terlihat bahwa korelasinya positif dan kuat, yaitu sebesar 0.8557. ini menandakan pertambahan nilai pada variabel `sebelum` diikuti dengan bertambahnya nilai pada variabel `sesudah`
+
+#### Pearson Test
+```{r}
+cor.test(data$sebelum, data$sesudah, method = "pearson")
+```
+
+Terlihat p-value lebih kecil dari 0.05, sehingga tolak H0, yang berarti terbukti terdapat korelasi antara variable `sebelum` dan `sesudah`
+
+#### Visualisasi
+```{r message=FALSE, warning=FALSE}
+library(ggpubr)
+ggscatter(data, x = "sebelum", y = "sesudah",
+          add = "reg.line", conf.int = TRUE, 
+          cor.coef = TRUE, cor.method = "pearson")
+```
+
+## Nomor 2
+Jika ternyata ada ketambahan 6 sampel baru seperti tabel dibawah, hitung dan uji kembali korelasi dari variabel sebelum dan sesudah.
+
+|     Sebelum    |     Sesudah    |     Jenis Kelamin    |     Metode    |     Puas     |
+|----------------|----------------|----------------------|---------------|--------------|
+|     91         |     100        |     Laki-Laki        |     B         |     Ya       |
+|     95         |     100        |     Perempuan        |     D         |     Ya       |
+|     97         |     100        |     Laki-Laki        |     A         |     Ya       |
+|     98         |     100        |     Laki-Laki        |     C         |     Ya       |
+|     98         |     100        |     Perempuan        |     A         |     Ya       |
+|     100        |     100        |     Perempuan        |     C         |     Tidak    |
+
+
+### Pembahasan Nomor 2
+
+#### Gabung Data Baru
+```{r}
+newData <- data.frame(sebelum = c(91, 95, 97, 98, 98, 100),
+                      sesudah = rep(100, 6),
+                      jenis_kelamin = c("Laki-Laki", "Perempuan", "Laki-Laki", "Laki-Laki", "Perempuan", "Perempuan"),
+                      metode = c("B", "D", "A", "C", "A", "C"),
+                      puas = c(rep("Ya", 5), "Tidak"))
+data2 <- rbind(data, newData)
+kable(tail(data2, 10))
+```
+
+#### Cek Normalitas
+```{r}
+shapiro.test(data2$sebelum)
+```
+```{r}
+shapiro.test(data2$sesudah)
+```
+
+Terlihat bahwa penambahan 6 data tersebut membuat kedua variabel tidak normal. Sehingga akan dilanjutkan dengan korelasi Spearman
+
+#### Hitung Korelasi
+```{r}
+cor(data2$sebelum, data2$sesudah, method = "spearman")
+```
+
+Terlihat bahwa korelasinya positif dan kuat, yaitu sebesar 0.839. ini menandakan pertambahan nilai pada variabel `sebelum` diikuti dengan bertambahnya nilai pada variabel `sesudah`
+
+#### Spearman Test
+```{r message=FALSE, warning=FALSE}
+cor.test(data2$sebelum, data2$sesudah, method = "spearman")
+```
+
+Terlihat p-value lebih kecil dari 0.05, sehingga tolak H0, yang berarti terbukti terdapat korelasi antara variable `sebelum` dan `sesudah` dengan tambahan 6 data baru
+
+#### Visualisasi
+```{r message=FALSE, warning=FALSE}
+library(ggpubr)
+ggscatter(data2, x = "sebelum", y = "sesudah",
+          add = "reg.line", conf.int = TRUE, 
+          cor.coef = TRUE, cor.method = "spearman")
+```
