@@ -1,0 +1,148 @@
+---
+title: "Regresi"
+author: "Tim Modul"
+date: "12/28/2020"
+output: html_document
+---
+
+# Load Library
+```{r message=FALSE, warning=FALSE}
+library(ggplot2)
+library(olsrr)
+library(knitr)
+```
+
+# Materi
+**Acuan Materi**
+
+1. [Simple Linear Regression in R](http://www.sthda.com/english/articles/40-regression-analysis/167-simple-linear-regression-in-r/)
+2. [Multiple Linear Regression in R](http://www.sthda.com/english/articles/40-regression-analysis/168-multiple-linear-regression-in-r/)
+3. [Linear Regression Assumptions and Diagnostics in R](https://rpubs.com/aryn999/LinearRegressionAssumptionsAndDiagnosticsInR)
+
+Regresi linear adalah sebuah pendekatan untuk memodelkan hubungan antara variable terikat Y dan satu atau lebih variable bebas yang disebut X. Salah satu kegunaan dari regresi linear adalah untuk melakukan prediksi berdasarkan data-data yang telah dimiliki sebelumnya. Terdapat beberapa asumsi untuk melakukan analisis regresi.
+
+- Linearitas
+- Homoscedastis, suatu kondisi dimana residual bersifat konstan
+- Non-Multikolineritas, keadaan dimana setiap pasang variabel x tidak saling berkorelasi yang berarti harus saling independent.
+- Normalitas. Uji kenormalan bukan dilakukan pada data x atau y akan tetapi pada residual. Residual dari model yang dibuat harus berdistribusi normal.
+- Non-Autokorelasi
+
+# Simple Linear Regression
+```{r}
+my_data <- mtcars
+kable(head(my_data, 10))
+```
+Pada contoh kali ini akan dibuat model regresi antara variabel `mpg` dan `disp`
+
+## Ekplorasi Data
+```{r message=FALSE, warning=FALSE}
+ggplot(my_data, aes(x = mpg, y = disp)) +
+      geom_point() +
+      geom_smooth() +
+      theme_classic()
+```
+
+Dari grafik diatas terlihat pola linear yang menurun antara `mpg` dan `disp`. Ini adalah sesuatu hal yang baik karena salah satu asumsi dari regresi adalah liearitas. Hal ini juga dapat dilihat dari korelasinya.
+
+```{r}
+cor(my_data$mpg, my_data$disp)
+```
+
+Korelasi antara dua variabel cukup tinggi, sehingga variabel `disp` ini diharapkan dapat menjelaskan variabel `mpg` dengan baik. Jika korelasinya kecil bisa diganti dengan variabel lainnya.
+
+## Membuat Model
+```{r}
+model <- lm(mpg ~ disp, data = my_data)
+model
+```
+
+Dari hasil diatas diperoleh
+
+- Model regresi yang dibuat memiliki rumus `mpg = 29.6 - 0.04122*disp`.
+- Intercept 29.6 dapat diinterpertasikan bahwa ketikan variabel `dist` bernilai nol maka `mpg` akan bernilai 29.6. Ini berarti kita dapat mengekpektasikan bahwa miles/gallon yang dapat ditempuh sebesar 29.6 tanpa adanya `dist`.
+- Regresi koefisien `disp` menunjukkan bahwa ketika variabel `disp` bertambah satu satuan maka akan mengurangi nilai dari variabel `mpg` sebesar 0.04122
+
+### Membuat Garis Regresi
+```{r message=FALSE, warning=FALSE}
+ggplot(my_data, aes(x = mpg, y = disp)) +
+      geom_point() +
+      geom_smooth(method = "lm") +
+      theme_classic()
+```
+
+## Evaluasi Model
+
+```{r}
+summary(model)
+```
+
+### Signifikansi Parameter
+Terlihat bahwa parameter b0 (intercept) dan b1 (disp) signifikan dengan p-value yang sangat kecil. Hal ini menunjukkan kedua parameter tersebut berpengaruh terhadap model yang dibuat. Jika ada yang tidak signifikan maka variabel tersebut sebaiknya tidak diikutkan kedalam model
+
+### Nilai R-Squared dan Adjusted R-Squre
+Terlihat bahwa nilai r-squared sebesar 0.7183. Ini menunjukkan model yang dibuat dapat menjelaskan sebesar 71% variansi (informasi) dari variabel `mpg`, sementara itu 29% dijelaskan variabel yang diketahui (error). Semakin tinggi R-Squared maka semakin baik model tersebut.
+
+Semakin banyak jumlah predictor (variabel) maka nilai R-squared cenderung akan semakin bertambah, oleh karena itu jika jumlah predictor semakin banyak maka yang sebaiknya digunakan adalah Adjusted R-squared. Adjusted R-squared akan memberikan pinalti terhadap jumlah predictor yang banyak
+
+### F Statistic
+F-statistic memberikan gambaran secara menyeluruh terhadap model. F-statistic akan menilai apakah minimal ada satu predictor variabel yang memiliki coeficient secara statistic tidak sama dengan nol.
+
+F-statistic akan penting ketika jumlah predictor lebih dari satu, yaitu pada Multiple Linear Regression.
+
+Nilai F-statistic pada model diatas sangat signifikan dengan p-value jauh lebih kecil dari 0.05.
+
+### Normalitas Residual
+Residual dari model yang dibuat harus berdistribusi normal, oleh karena itu akan diuji dengan Shapiro Wilk
+```{r}
+shapiro.test(model$residuals)
+```
+
+Terlihat bahwa pada alpa 5% residual tidak berdistribusi normal, akan tetapi pada alpa 1% residual berdistribusi normal. Hal ini dapat ditangai dengan mengilangkan data yang outlier
+
+### Test Homoscedasticity
+```{r}
+plot(model, 3)
+```
+
+Breusch-Pagan Test
+
+- H0 : Data homoscedastis
+- h1 : Data tidak homoscedastis
+```{r message=FALSE, warning=FALSE}
+library(lmtest)
+bptest(model)
+```
+
+Dengan alpa 5% dapat disimpulkan residual sudah bersifat homoscedastis
+
+# Multiple Linear Regression
+
+Analisis pada Multiple Linear Regression hampir sama dengan Simple Linear Regression. Kali ini akan dibuat model untuk memprediksi `mpg` menggunakan 3 variabel, `drat`, `wt`, dan `qsec`
+
+## Membuat Model
+```{r}
+model <- lm(mpg ~ drat + wt + qsec, data = my_data)
+summary(model)
+```
+
+Dari model diatas terlihat bahwavariabel drat tidak signifikan sehingga dapat dihilangkan dari model.
+
+```{r}
+model <- lm(mpg ~ wt + qsec, data = my_data)
+summary(model)
+```
+
+Sekarang semua variabel sudah signifikan. Nilai adjusted R-squared dan R-squared berkisar 81%-82%, ini menunjukkan bahwa model yang dibuat sudah menjelaskan sebesar 81%-82% variansi yang nilai variabel `mpg`. Nilai dari F-statistic juga sudah signifikan.
+
+Silahkan uji asumsi model seperti pada simple linear regression, tambahkan juga pengecekan autocorrelation dan multikoloneritas. Selengkapnya bisa baca [disini](https://rpubs.com/aryn999/LinearRegressionAssumptionsAndDiagnosticsInR)
+
+## All Possible Model
+```{r}
+model <- lm(mpg ~ drat + wt + qsec, data = my_data)
+kable(ols_step_all_possible(model))
+```
+
+
+# Pembahasan Latihan Soal
+- Soal nomor satu [disini](http://www.sthda.com/english/articles/40-regression-analysis/167-simple-linear-regression-in-r/)
+- Soal nomor dua [disini](http://www.sthda.com/english/articles/40-regression-analysis/168-multiple-linear-regression-in-r/)
