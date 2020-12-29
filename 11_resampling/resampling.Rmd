@@ -1,0 +1,225 @@
+---
+title: "Resampling"
+author: "Tim Modul"
+date: "12/28/2020"
+output: 
+   md_document:
+       variant: markdown_github
+---
+
+```{r setup, include=FALSE}
+library(knitr)
+```
+
+# Materi
+Sering kita dihadapkan pada permasalahan, hanya mendapatkan jumlah sampel yang kecil dalam suatu pemodelan dan dikhawatirkan parameter yang diperoleh bias, underestimate atau overestimate. Salah satu cara mengatasinya adalah dengan teknik resampling Bootstrap dan Jackknife. Bootstrap dan Jackknife adalah teknik nonparametrik dan resampling yang bertujuan untuk menaksir standar eror dan confidence interval parameter populasi, seperti : mean, median, proporsi, koefisien korelasi dan regresi, dengan tidak selalu memperhatikan asumsi distribusi. Jackknife sendiri adalah alternatif dari bootstrap.
+
+# Bootstrap
+
+Prosedur Bootstrap :
+
+1. Menarik n-sampel acak dari suatu populasi sebanyak satu kali. (Mengambil sample 𝑥)
+2. Dari sampel yang didapat, lakukan resample dengan pengembalian (non-parametrik) atau ambil sub-sampel acak dari distribusi teoritis populasi yang diasumsikan dengan estimasi parameter dari data sampel yang didapat (parametrik)
+3. Dari sub-sampel yang ada, estimasikan nilai parameter yang ingin didapat, dinotasikan dengan 𝜃̂𝑏1, 𝜃̂𝑏2, . . ., 𝜃̂𝑏𝐵 , bentuk umumnya 𝜃̂𝑏𝑖.
+4. Ulangi langkah 2 dan 3 sebanyak B kali yang mungkin (direkomendasikan 𝐵 = 1000 atau lebih untuk mengestimasi confidence Interval)
+5. Dari semua estimasi parameter sub-sampel (𝜃̂𝑏1, 𝜃̂𝑏2, . . ., 𝜃̂𝑏𝐵 ), hitung rata – ratanya untuk mendapatkan estimasi parameter dan standard deviasinya untuk nilai standard error
+
+## Membuat Fungsi Sendiri
+```{r}
+bootstrap <- function(x, iter = 1000, FUN = "mean", alpa = 0.05, ...){
+      theta <- NULL
+      n <- length(x)
+      for(i in 1:iter){
+            my_sample <- sample(x, replace = TRUE)
+            theta[i] <- do.call(FUN, list(my_sample, ...))
+      }
+      rata2 <- mean(theta)
+      bias <-  mean(theta) - mean(x)
+      se <- sqrt(var(theta) / n)
+      lower_confidence <- rata2 - qt(alpa/2, n -1, lower.tail = FALSE) * se
+      upper_confidence <- rata2 + qt(alpa/2, n -1, lower.tail = FALSE) * se
+      
+      list(theta = theta,
+           mean_theta = rata2,
+           bias = bias,
+           se = se,
+           lower_ci = lower_confidence,
+           upper_ci = upper_confidence,
+           alpa = alpa,
+           iter = iter,
+           FUN = substitute(FUN))
+}
+```
+
+## Mencoba Fungsi Buatan
+
+### Membuat Data Dummy
+```{r}
+set.seed(270100)
+x <- rnorm(100, mean = 20, sd = 4)
+mean(x)
+```
+### Menjalankan Bootstrap Sampling
+```{r}
+boot <- bootstrap(x, FUN = "mean")
+boot[-1]
+```
+
+```{r}
+hist(boot$theta)
+```
+
+# Jacknife
+
+Prosedur Jacknife sebagai berikut.
+
+1. Menarik n-sampel acak dari suatu populasi sebanyak satu kali. (Mengambil sample 𝑥)
+2. Resample dengan mengeluarkan elemen sampel ke i (𝑖 = 1,2,… ,𝑛). Didapatkan resample ke-i (𝑖 = 1,2,...,𝑛). Setiap hasil resample akan berukuran (n-1)
+3. Perhitungan penaksir setiap hasil resample, didapatkan : 𝜃̂𝑗1, 𝜃̂𝑗2, . . ., 𝜃̂𝑗𝑛 ; bentuk umumnya 𝜃̂𝑗𝑖.
+4. Rata-ratakan penaksir yang didapatkan dari setiap hasil resample.
+
+## Membuat Fungsi Sendiri
+```{r}
+jacknife_manual <- function(x, FUN = "mean", alpa = 0.05, ...){
+      theta <-  NULL
+      n <- length(x)
+      for(i in 1:n){
+            my_sample <- x[-i]
+            theta[i] <- do.call(FUN, list(my_sample, ...))
+      }
+     
+      rata2 <- mean(theta)
+      bias <-  mean(theta) - mean(x)
+      se <- sqrt(var(theta) / n)
+      lower_confidence <- rata2 - qt(alpa/2, n -1, lower.tail = FALSE) * se
+      upper_confidence <- rata2 + qt(alpa/2, n -1, lower.tail = FALSE) * se
+      
+      list(theta = theta,
+           bias =  bias,
+           se = se,
+           lower_ci = lower_confidence,
+           upper_ci = upper_confidence,
+           alpa = alpa,
+           n = n,
+           FUN = substitute(FUN))
+}
+```
+
+## Mencoba Fungsi Buatan
+
+### Membuat Data Dummy
+```{r}
+y <- rnorm(100, 50, 2)
+mean(y)
+```
+```{r}
+se <- sqrt(var(y)/length(y))
+se
+```
+
+### Jacknife Sampling
+```{r}
+jack <- jacknife_manual(y)
+jack[-1]
+```
+
+```{r}
+hist(jack$theta)
+```
+
+
+# Pembahasan Latihan Soal
+
+## Nomor 1
+Gunakan prosedur bootstrap untuk menduga parameter pada model regresi dari data marketing package datarium
+
+### Pembahasan Nomor 1
+
+### Load Data
+```{r}
+# install.packages("datarium")
+data("marketing", package = "datarium")
+kable(head(marketing, 10))
+```
+
+
+### Model Awal
+Model yang akan dibuat adalah regresi liniear sederhana, melibatkan variabel `sales` sebagai variabel dependent dan variabel `youtube` sebagai variabel independet
+```{r}
+model <- lm(sales ~ youtube, data = marketing)
+coef(model)
+```
+
+### Bootstrap
+```{r}
+boot <- NULL
+for (i in 1:nrow(marketing)){
+   index_selected <- sample(nrow(marketing), replace = TRUE)
+   my_sample <- marketing[index_selected, ]   
+   model <- lm(sales ~ youtube, data = my_sample)
+   if(is.null(boot))
+      boot <- rbind(coef(model))
+   else
+      boot <- rbind(boot, coef(model))
+   
+}
+boot <- data.frame(boot)
+kable(head(boot, 10))
+```
+
+
+```{r}
+result <- sapply(boot, function(x){
+   mean_boot <-  mean(x)
+   se_boot = sqrt(var(x) / length(x))
+   df <- length(x) - 1
+   ci_95_lower <- mean_boot - qt(0.05, df, lower.tail = FALSE) * se_boot
+   ci_95_upper <- mean_boot + qt(0.05, df, lower.tail = FALSE) * se_boot
+   
+   c(mean_boot = mean_boot,
+     se_boot = se_boot,
+     ci_95_lower = ci_95_lower,
+     ci_95_upper = ci_95_upper)
+})
+
+kable(result)
+```
+
+
+### Pembahasan Nomor 1
+
+
+## Nomor 2
+Dengan menggunakan data_dummy_komstat.csv. Gunakan prosedur Jacknife untuk menduga rata-rata dari variabel sesudah dan sebelum
+
+### Pembahasan Nomor 2
+
+#### Load Data
+```{r}
+data <- read.csv("https://raw.githubusercontent.com/modul60stis/data/main/data_dummy_komstat.csv")
+kable(head(data, 10))
+```
+
+#### Jacknife Pada Variabel `sebelum`
+```{r}
+jack <- jacknife_manual(data$sebelum)
+jack[-1]
+```
+
+#### Visualisasi Sebaran Nilai Penduga Jacknife
+```{r}
+hist(jack$theta)
+```
+
+#### Jacknife Pada Variabel `sesudah`
+```{r}
+jack <- jacknife_manual(data$sesudah)
+jack[-1]
+```
+
+#### Visualisasi Sebaran Nilai Penduga Jacknife
+```{r}
+hist(jack$theta)
+```
+
+
