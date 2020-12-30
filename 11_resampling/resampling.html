@@ -1812,6 +1812,10 @@ document.addEventListener('DOMContentLoaded', function() {
 <div class="page-content has-page-title">
 <div id="materi" class="section level1">
 <h1>Materi</h1>
+<p><strong>Acuan Materi</strong></p>
+<ol style="list-style-type: decimal">
+<li><a href="https://towardsdatascience.com/bootstrapping-confidence-intervals-the-basics-b4f28156a8da">Bootstrapping Confidence Intervals: the basics</a></li>
+</ol>
 <p>Sering kita dihadapkan pada permasalahan, hanya mendapatkan jumlah sampel yang kecil dalam suatu pemodelan dan dikhawatirkan parameter yang diperoleh bias, underestimate atau overestimate. Salah satu cara mengatasinya adalah dengan teknik resampling Bootstrap dan Jackknife. Bootstrap dan Jackknife adalah teknik nonparametrik dan resampling yang bertujuan untuk menaksir standar eror dan confidence interval parameter populasi, seperti : mean, median, proporsi, koefisien korelasi dan regresi, dengan tidak selalu memperhatikan asumsi distribusi. Jackknife sendiri adalah alternatif dari bootstrap.</p>
 </div>
 <div id="bootstrap" class="section level1">
@@ -1826,6 +1830,7 @@ document.addEventListener('DOMContentLoaded', function() {
 </ol>
 <div id="membuat-fungsi-sendiri" class="section level2">
 <h2>Membuat Fungsi Sendiri</h2>
+<p>Untuk menentukan confident interval terdapat beberapa metode, silahkan baca <a href="https://towardsdatascience.com/bootstrapping-confidence-intervals-the-basics-b4f28156a8da">disini</a></p>
 <pre class="r"><code>bootstrap &lt;- function(x, iter = 1000, FUN = &quot;mean&quot;, alpa = 0.05, ...){
       theta &lt;- NULL
       n &lt;- length(x)
@@ -1835,7 +1840,7 @@ document.addEventListener('DOMContentLoaded', function() {
       }
       rata2 &lt;- mean(theta)
       bias &lt;-  mean(theta) - mean(x)
-      se &lt;- sqrt(var(theta) / n)
+      se &lt;- sd(theta)
       lower_confidence &lt;- rata2 - qt(alpa/2, n -1, lower.tail = FALSE) * se
       upper_confidence &lt;- rata2 + qt(alpa/2, n -1, lower.tail = FALSE) * se
       
@@ -1870,13 +1875,13 @@ boot[-1]</code></pre>
 ## [1] 0.006359059
 ## 
 ## $se
-## [1] 0.04465458
+## [1] 0.4465458
 ## 
 ## $lower_ci
-## [1] 20.14676
+## [1] 19.34932
 ## 
 ## $upper_ci
-## [1] 20.32397
+## [1] 21.12141
 ## 
 ## $alpa
 ## [1] 0.05
@@ -1912,7 +1917,7 @@ boot[-1]</code></pre>
      
       rata2 &lt;- mean(theta)
       bias &lt;-  mean(theta) - mean(x)
-      se &lt;- sqrt(var(theta) / n)
+      se &lt;- sd(theta)
       lower_confidence &lt;- rata2 - qt(alpa/2, n -1, lower.tail = FALSE) * se
       upper_confidence &lt;- rata2 + qt(alpa/2, n -1, lower.tail = FALSE) * se
       
@@ -1945,13 +1950,13 @@ jack[-1]</code></pre>
 ## [1] 0
 ## 
 ## $se
-## [1] 0.001823371
+## [1] 0.01823371
 ## 
 ## $lower_ci
-## [1] 50.20116
+## [1] 50.16859
 ## 
 ## $upper_ci
-## [1] 50.20839
+## [1] 50.24095
 ## 
 ## $alpa
 ## [1] 0.05
@@ -2063,7 +2068,8 @@ coef(model)</code></pre>
 <div id="bootstrap-1" class="section level3">
 <h3>Bootstrap</h3>
 <pre class="r"><code>boot &lt;- NULL
-for (i in 1:nrow(marketing)){
+iter &lt;-  1000
+for (i in 1:iter){
    index_selected &lt;- sample(nrow(marketing), replace = TRUE)
    my_sample &lt;- marketing[index_selected, ]   
    model &lt;- lm(sales ~ youtube, data = my_sample)
@@ -2127,10 +2133,10 @@ kable(head(boot, 10))</code></pre>
 </table>
 <pre class="r"><code>result &lt;- sapply(boot, function(x){
    mean_boot &lt;-  mean(x)
-   se_boot = sqrt(var(x) / length(x))
+   se_boot = sd(x)
    df &lt;- length(x) - 1
-   ci_95_lower &lt;- mean_boot - qt(0.05, df, lower.tail = FALSE) * se_boot
-   ci_95_upper &lt;- mean_boot + qt(0.05, df, lower.tail = FALSE) * se_boot
+   ci_95_lower &lt;- mean_boot - qt(0.05/2, df, lower.tail = FALSE) * se_boot
+   ci_95_upper &lt;- mean_boot + qt(0.05/2, df, lower.tail = FALSE) * se_boot
    
    c(mean_boot = mean_boot,
      se_boot = se_boot,
@@ -2150,23 +2156,23 @@ kable(result)</code></pre>
 <tbody>
 <tr class="odd">
 <td align="left">mean_boot</td>
-<td align="right">8.4862138</td>
-<td align="right">0.0472032</td>
+<td align="right">8.4402200</td>
+<td align="right">0.0475709</td>
 </tr>
 <tr class="even">
 <td align="left">se_boot</td>
-<td align="right">0.0251932</td>
-<td align="right">0.0001883</td>
+<td align="right">0.3781562</td>
+<td align="right">0.0027643</td>
 </tr>
 <tr class="odd">
 <td align="left">ci_95_lower</td>
-<td align="right">8.4445809</td>
-<td align="right">0.0468920</td>
+<td align="right">7.6981486</td>
+<td align="right">0.0421463</td>
 </tr>
 <tr class="even">
 <td align="left">ci_95_upper</td>
-<td align="right">8.5278467</td>
-<td align="right">0.0475143</td>
+<td align="right">9.1822915</td>
+<td align="right">0.0529954</td>
 </tr>
 </tbody>
 </table>
@@ -2276,13 +2282,13 @@ jack[-1]</code></pre>
 ## [1] 0
 ## 
 ## $se
-## [1] 0.0002704663
+## [1] 0.009079775
 ## 
 ## $lower_ci
-## [1] 61.00391
+## [1] 60.98662
 ## 
 ## $upper_ci
-## [1] 61.00497
+## [1] 61.02225
 ## 
 ## $alpa
 ## [1] 0.05
@@ -2306,13 +2312,13 @@ jack[-1]</code></pre>
 ## [1] 0
 ## 
 ## $se
-## [1] 0.0003138365
+## [1] 0.01053575
 ## 
 ## $lower_ci
-## [1] 61.12006
+## [1] 61.1
 ## 
 ## $upper_ci
-## [1] 61.12129
+## [1] 61.14135
 ## 
 ## $alpa
 ## [1] 0.05

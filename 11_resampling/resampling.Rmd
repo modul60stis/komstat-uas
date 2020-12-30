@@ -3,8 +3,8 @@ title: "Resampling"
 author: "Tim Modul"
 date: "12/28/2020"
 output: 
-   md_document:
-       variant: markdown_github
+      md_document:
+            variant: markdown_github
 ---
 
 ```{r setup, include=FALSE}
@@ -12,6 +12,10 @@ library(knitr)
 ```
 
 # Materi
+**Acuan Materi**
+
+1. [Bootstrapping Confidence Intervals: the basics](https://towardsdatascience.com/bootstrapping-confidence-intervals-the-basics-b4f28156a8da)
+
 Sering kita dihadapkan pada permasalahan, hanya mendapatkan jumlah sampel yang kecil dalam suatu pemodelan dan dikhawatirkan parameter yang diperoleh bias, underestimate atau overestimate. Salah satu cara mengatasinya adalah dengan teknik resampling Bootstrap dan Jackknife. Bootstrap dan Jackknife adalah teknik nonparametrik dan resampling yang bertujuan untuk menaksir standar eror dan confidence interval parameter populasi, seperti : mean, median, proporsi, koefisien korelasi dan regresi, dengan tidak selalu memperhatikan asumsi distribusi. Jackknife sendiri adalah alternatif dari bootstrap.
 
 # Bootstrap
@@ -25,6 +29,7 @@ Prosedur Bootstrap :
 5. Dari semua estimasi parameter sub-sampel (𝜃̂𝑏1, 𝜃̂𝑏2, . . ., 𝜃̂𝑏𝐵 ), hitung rata – ratanya untuk mendapatkan estimasi parameter dan standard deviasinya untuk nilai standard error
 
 ## Membuat Fungsi Sendiri
+Untuk menentukan confident interval terdapat beberapa metode, silahkan baca [disini](https://towardsdatascience.com/bootstrapping-confidence-intervals-the-basics-b4f28156a8da)
 ```{r}
 bootstrap <- function(x, iter = 1000, FUN = "mean", alpa = 0.05, ...){
       theta <- NULL
@@ -35,7 +40,7 @@ bootstrap <- function(x, iter = 1000, FUN = "mean", alpa = 0.05, ...){
       }
       rata2 <- mean(theta)
       bias <-  mean(theta) - mean(x)
-      se <- sqrt(var(theta) / n)
+      se <- sd(theta)
       lower_confidence <- rata2 - qt(alpa/2, n -1, lower.tail = FALSE) * se
       upper_confidence <- rata2 + qt(alpa/2, n -1, lower.tail = FALSE) * se
       
@@ -90,7 +95,7 @@ jacknife_manual <- function(x, FUN = "mean", alpa = 0.05, ...){
      
       rata2 <- mean(theta)
       bias <-  mean(theta) - mean(x)
-      se <- sqrt(var(theta) / n)
+      se <- sd(theta)
       lower_confidence <- rata2 - qt(alpa/2, n -1, lower.tail = FALSE) * se
       upper_confidence <- rata2 + qt(alpa/2, n -1, lower.tail = FALSE) * se
       
@@ -153,7 +158,8 @@ coef(model)
 ### Bootstrap
 ```{r}
 boot <- NULL
-for (i in 1:nrow(marketing)){
+iter <-  1000
+for (i in 1:iter){
    index_selected <- sample(nrow(marketing), replace = TRUE)
    my_sample <- marketing[index_selected, ]   
    model <- lm(sales ~ youtube, data = my_sample)
@@ -171,10 +177,10 @@ kable(head(boot, 10))
 ```{r}
 result <- sapply(boot, function(x){
    mean_boot <-  mean(x)
-   se_boot = sqrt(var(x) / length(x))
+   se_boot = sd(x)
    df <- length(x) - 1
-   ci_95_lower <- mean_boot - qt(0.05, df, lower.tail = FALSE) * se_boot
-   ci_95_upper <- mean_boot + qt(0.05, df, lower.tail = FALSE) * se_boot
+   ci_95_lower <- mean_boot - qt(0.05/2, df, lower.tail = FALSE) * se_boot
+   ci_95_upper <- mean_boot + qt(0.05/2, df, lower.tail = FALSE) * se_boot
    
    c(mean_boot = mean_boot,
      se_boot = se_boot,

@@ -3,6 +3,11 @@
 Materi
 ======
 
+**Acuan Materi**
+
+1.  [Bootstrapping Confidence Intervals: the
+    basics](https://towardsdatascience.com/bootstrapping-confidence-intervals-the-basics-b4f28156a8da)
+
 Sering kita dihadapkan pada permasalahan, hanya mendapatkan jumlah
 sampel yang kecil dalam suatu pemodelan dan dikhawatirkan parameter yang
 diperoleh bias, underestimate atau overestimate. Salah satu cara
@@ -37,6 +42,10 @@ Prosedur Bootstrap :
 Membuat Fungsi Sendiri
 ----------------------
 
+Untuk menentukan confident interval terdapat beberapa metode, silahkan
+baca
+[disini](https://towardsdatascience.com/bootstrapping-confidence-intervals-the-basics-b4f28156a8da)
+
 ``` r
 bootstrap <- function(x, iter = 1000, FUN = "mean", alpa = 0.05, ...){
       theta <- NULL
@@ -47,7 +56,7 @@ bootstrap <- function(x, iter = 1000, FUN = "mean", alpa = 0.05, ...){
       }
       rata2 <- mean(theta)
       bias <-  mean(theta) - mean(x)
-      se <- sqrt(var(theta) / n)
+      se <- sd(theta)
       lower_confidence <- rata2 - qt(alpa/2, n -1, lower.tail = FALSE) * se
       upper_confidence <- rata2 + qt(alpa/2, n -1, lower.tail = FALSE) * se
       
@@ -90,13 +99,13 @@ boot[-1]
     ## [1] 0.006359059
     ## 
     ## $se
-    ## [1] 0.04465458
+    ## [1] 0.4465458
     ## 
     ## $lower_ci
-    ## [1] 20.14676
+    ## [1] 19.34932
     ## 
     ## $upper_ci
-    ## [1] 20.32397
+    ## [1] 21.12141
     ## 
     ## $alpa
     ## [1] 0.05
@@ -141,7 +150,7 @@ jacknife_manual <- function(x, FUN = "mean", alpa = 0.05, ...){
      
       rata2 <- mean(theta)
       bias <-  mean(theta) - mean(x)
-      se <- sqrt(var(theta) / n)
+      se <- sd(theta)
       lower_confidence <- rata2 - qt(alpa/2, n -1, lower.tail = FALSE) * se
       upper_confidence <- rata2 + qt(alpa/2, n -1, lower.tail = FALSE) * se
       
@@ -186,13 +195,13 @@ jack[-1]
     ## [1] 0
     ## 
     ## $se
-    ## [1] 0.001823371
+    ## [1] 0.01823371
     ## 
     ## $lower_ci
-    ## [1] 50.20116
+    ## [1] 50.16859
     ## 
     ## $upper_ci
-    ## [1] 50.20839
+    ## [1] 50.24095
     ## 
     ## $alpa
     ## [1] 0.05
@@ -259,7 +268,8 @@ coef(model)
 
 ``` r
 boot <- NULL
-for (i in 1:nrow(marketing)){
+iter <-  1000
+for (i in 1:iter){
    index_selected <- sample(nrow(marketing), replace = TRUE)
    my_sample <- marketing[index_selected, ]   
    model <- lm(sales ~ youtube, data = my_sample)
@@ -289,10 +299,10 @@ kable(head(boot, 10))
 ``` r
 result <- sapply(boot, function(x){
    mean_boot <-  mean(x)
-   se_boot = sqrt(var(x) / length(x))
+   se_boot = sd(x)
    df <- length(x) - 1
-   ci_95_lower <- mean_boot - qt(0.05, df, lower.tail = FALSE) * se_boot
-   ci_95_upper <- mean_boot + qt(0.05, df, lower.tail = FALSE) * se_boot
+   ci_95_lower <- mean_boot - qt(0.05/2, df, lower.tail = FALSE) * se_boot
+   ci_95_upper <- mean_boot + qt(0.05/2, df, lower.tail = FALSE) * se_boot
    
    c(mean_boot = mean_boot,
      se_boot = se_boot,
@@ -305,10 +315,10 @@ kable(result)
 
 |               |  X.Intercept.|    youtube|
 |:--------------|-------------:|----------:|
-| mean\_boot    |     8.4862138|  0.0472032|
-| se\_boot      |     0.0251932|  0.0001883|
-| ci\_95\_lower |     8.4445809|  0.0468920|
-| ci\_95\_upper |     8.5278467|  0.0475143|
+| mean\_boot    |     8.4402200|  0.0475709|
+| se\_boot      |     0.3781562|  0.0027643|
+| ci\_95\_lower |     7.6981486|  0.0421463|
+| ci\_95\_upper |     9.1822915|  0.0529954|
 
 ### Pembahasan Nomor 1
 
@@ -351,13 +361,13 @@ jack[-1]
     ## [1] 0
     ## 
     ## $se
-    ## [1] 0.0002704663
+    ## [1] 0.009079775
     ## 
     ## $lower_ci
-    ## [1] 61.00391
+    ## [1] 60.98662
     ## 
     ## $upper_ci
-    ## [1] 61.00497
+    ## [1] 61.02225
     ## 
     ## $alpa
     ## [1] 0.05
@@ -387,13 +397,13 @@ jack[-1]
     ## [1] 0
     ## 
     ## $se
-    ## [1] 0.0003138365
+    ## [1] 0.01053575
     ## 
     ## $lower_ci
-    ## [1] 61.12006
+    ## [1] 61.1
     ## 
     ## $upper_ci
-    ## [1] 61.12129
+    ## [1] 61.14135
     ## 
     ## $alpa
     ## [1] 0.05
@@ -411,6 +421,5 @@ hist(jack$theta)
 ```
 
 ![](resampling_files/figure-markdown_github/unnamed-chunk-18-1.png)
-
 
 
