@@ -1,0 +1,302 @@
+---
+title: "Dplyr"
+author: "Tim Modul"
+date: "1/1/2021"
+output: html_document
+---
+
+```{r message=FALSE, warning=FALSE}
+library(knitr)
+library(dplyr)
+```
+
+# Materi
+**Acuan Materi**
+
+1. [Useful dplyr Functions](https://www.r-bloggers.com/2017/07/useful-dplyr-functions-wexamples/)
+2. [Data Manipulation with dplyr](https://www.r-bloggers.com/2015/08/data-manipulation-with-dplyr/)
+3. [MANIPULASI DATA DENGAN LIBRARY(DPLYR) R](https://muhammadilhammubarok.wordpress.com/2018/05/01/manipulasi-data-dengan-librarydplyr-di-r/)
+4. [Dplyr Cheat Sheet](https://rstudio.com/wp-content/uploads/2015/02/data-wrangling-cheatsheet.pdf)
+
+Dplyr adalah package di R yang dapat digunakan untuk memanipulasi data. Package ini dikembangkan oleh Hadley Wickham dan Roman Francois yang memberikan beberapa fungsi yang mudah digunakan. Package ini sangat berguna ketika digunakan untuk melakukan analisis dan eksplorasi data.
+
+```{r}
+iris <- iris
+kable(head(iris, 5))
+```
+
+```{r}
+air <- airquality
+kable(head(air, 5))
+```
+# Dplyr
+
+## Pipe Operator
+
+Operator ini menggunakan `%>%` yang berguna untuk fungsi berantai. Sehingga dapat menuliskan lebih dari satu fungsi sekaligus tanpa harus menyimpannya terlebih dahulu. Cara kerjanya yaitu meletakkan apa yang ada disebelah kiri pipe ke dalam argument pertama fungsi disebelah kanan pipe
+
+Perintah `kable(head(air, 3))` akan sama dengan sintax berikut ini
+```{r}
+air %>% 
+      head(3) %>%
+      kable()
+```
+
+## Fungsi `glimpse`
+Fungsi glimpse() memiliki fungsi yang sama seperti str() yaitu memberikan rangkuman tentang keadaan data. Meliputi jumlah observasi atau baris dan jumlah variabel atau kolom. Kemudian memberikan informasi mengenai tipe dari variabel serta menampilkan sedikit tentang datanya.
+
+```{r}
+glimpse(air)
+```
+
+## Fungsi `sample_n` dan `sample_frac`
+Fungsi ini digunakan untuk mengambil secara acak pada data. Fungsi sample_n berarti mengambil sampel berdasarkan nilai n yang ditentukan. Fungsi sample_frac berarti mengambil sampel berdasarkan besaran persentase dari keluruhan data.
+
+```{r}
+air %>% 
+      sample_n(5, replace = FALSE) %>%
+      kable()
+```
+
+```{r}
+iris %>%
+      sample_frac(0.1, replace = TRUE) %>%
+      kable()
+```
+
+## Fungsi `select`
+Fungsi ini digunakan untuk mengambil satu atau beberapa variabel tertentu dari data.
+
+#### Bisa menggunakan nama kolom
+```{r}
+air %>%
+      select(Month, Day) %>%
+      head() %>%
+      kable()
+```
+
+#### Bisa mengunakan index kolom
+```{r}
+iris %>%
+      select(c(1, 3)) %>%
+      head() %>%
+      kable()
+```
+
+#### Bisa sambil langsung merubah nama kolom
+```{r}
+air %>%
+      select(bulan = Month, hari = Day) %>%
+      head() %>%
+      kable()
+```
+
+#### Bisa menggunakan beberapa fungsi tambahan
+```{r}
+iris %>%
+      select(starts_with("s")) %>%
+      head() %>%
+      kable()
+```
+
+```{r}
+iris %>%
+      select(contains("W")) %>%
+      head() %>%
+      kable()
+```
+
+```{r}
+iris %>%
+      select(-ends_with("h")) %>%
+      head() %>%
+      kable()
+```
+
+#### Bisa sambil mengurutkan kolom
+```{r}
+air %>%
+      select(Day, Month, everything()) %>%
+      head() %>%
+      kable()
+```
+
+## Fungsi `rename`
+```{r}
+air %>%
+      rename(bulan = Month,
+             tanggal = Day) %>%
+      head() %>%
+      kable()
+```
+
+## Fungsi `pull`
+Mengambil kolom sebagai vector
+
+```{r}
+iris %>%
+      pull(Sepal.Length)
+```
+
+## Fungsi `filter`
+Fungsi ini digunakan untuk menyeleksi dan menampilkan data sesuai dengan ketentuan.
+
+```{r}
+air %>%
+      filter(Month %in% c(5, 9) & Day == 2) %>%
+      kable()
+```
+
+## Fungsi `count`
+Fungsi ini digunakan untuk menyeleksi dan menampilkan data sesuai dengan ketentuan.
+
+```{r}
+iris %>%
+      count(Species) %>%
+      kable()
+```
+
+## Fungsi `distinct`
+Digunakan menghapus nilai yang duplikat
+
+```{r}
+air %>%
+      distinct(Month) %>%
+      kable()
+```
+
+Tetap mempertahankan kolom lainnya dapat menggunakan `.keep_all = TRUE`
+```{r}
+air %>%
+      distinct(Month, .keep_all = T) %>%
+      kable()
+```
+
+## Fungsi `arrange`
+Fungsi ini berguna untuk mengurutkan data berdasarkan variabel. Variabel yang menjadi acuan untuk diurutkan dapat lebih dari satu dan dapat ditentukan apakah dari besar ke kecil atau dari kecil ke besar.
+
+#### Dari yang terkecil
+```{r}
+air %>%
+      arrange(Solar.R) %>%
+      head() %>%
+      kable()
+```
+
+#### Dari yang terbesar
+```{r}
+air %>%
+      arrange(desc(Solar.R)) %>%
+      head() %>%
+      kable()
+```
+
+## Fungsi `mutate`
+Fungsi ini dapat digunakan untuk menambahkan variabel baru. Variabel baru tersebut dapat berupa variabel kategorik maupun numerik. 
+
+```{r}
+air %>%
+      select(hari = Day) %>%
+      mutate(katagori = if_else(hari < 15, "Awal Bulan", "Akhir Bulan")) %>%
+      sample_n(7) %>%
+      kable()
+```
+
+#### Dapat menambahkan kondisi
+```{r}
+iris %>%
+      mutate_if(is.numeric, funs(new = (. * 1000))) %>%
+      head() %>%
+      kable()
+```
+## Fungsi `group_by`
+Fungsi yang digunakan untuk mengelompokkan data berdasarkan satu atau lebih variabel. Efek dari fungsi ini akan terlihat jika dikombinasikan dengan fungsi `summarise`
+
+
+## Fungsi `summarise`
+Fungsi summarise digunakan untuk meringkas beberapa nilai data menjadi satu nilai.
+
+
+### Kombinasi dengan `group_by`
+```{r message=FALSE, warning=FALSE}
+air %>%
+      group_by(Month) %>%
+      summarise(rata2_Temp = mean(Temp)) %>%
+      kable()
+```
+
+### Summarise semua kolom
+```{r}
+iris %>%
+      select(-Species) %>%
+      summarise_all(funs(rata2 = mean, median)) %>%
+      kable()
+```
+
+
+### Summarise kolom tertentu
+```{r}
+iris %>%
+      group_by(Species) %>%
+      summarise_at(vars(Sepal.Length, Sepal.Width),
+                   funs(n(), mean)) %>%
+      kable()
+```
+
+### Summarise kolom pad kondisi tertentu
+```{r}
+iris %>%
+      summarise_if(is.numeric, mean) %>%
+      kable()
+```
+
+
+## Join
+
+Data Dummy 1
+```{r}
+df1 <- data.frame(ID = c(1, 2, 3, 4, 5),
+                  y = c(12, 23, 27, 1, 7))
+kable(df1)
+```
+
+Data Dummy 2
+```{r}
+df2 <- data.frame(ID = c(3, 4, 5, 6, 7),
+                  k = c(112, 123, 127, 11, 17))
+kable(df2)
+```
+
+### Inner Join
+Foreign key yang digunakan harus ada dikedua data frame
+```{r}
+inner_join(df1, df2, by ="ID") %>%
+      kable()
+```
+
+### Left Join
+Semua data frame pertama akan dimasukkan meskipun pasangannya di data frame kedua tidak ada
+```{r}
+left_join(df1, df2, by ="ID") %>% 
+      kable()
+```
+
+### Right Join
+Kebalikan dari left join
+```{r}
+right_join(df1, df2, by ="ID") %>%
+      kable()
+```
+
+### Full Join
+Kebalikan dari left join
+```{r}
+full_join(df1, df2, by ="ID") %>%
+      kable()
+```
+
+
+
+
+
+
