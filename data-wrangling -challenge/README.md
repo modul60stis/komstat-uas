@@ -25,6 +25,6 @@ Dataset ini dapat kamu akses [di github angkatan](https://github.com/modul60stis
 Dataset ini dapat kamu akses [di github angkatan](https://github.com/modul60stis/data/tree/main/spotify-playlist). Dataset ini diperoleh dari Kaggle, [Dataset of songs in Spotify](https://www.kaggle.com/mrmorj/dataset-of-songs-in-spotify). Dataset ini terdiri dari dua file yaitu file `genre_v2.csv` dan `playlist.csv`. File `genre_v2.csv` terdiri dari 42.305 baris. Analisis yang dapat kamu lakukan mungkin melihat bagaimana karakteristik dari lagu-lagu yang ada di Spotify dan mungkin juga dapat melihat genre apa aja yang ada di Spotify. Jika dataset terasa kurang cukup silahkan cari saja dataset lain dan gabungkan dengan dataset ini.
 
 ##
-[![ForTheBadge built-with-love](http://ForTheBadge.com/images/badges/built-with-love.svg)](https://GitHub.com/Naereen/) 
+[![ForTheBadge built-with-love](http://ForTheBadge.com/images/badges/built-with-love.svg)](https://www.instagram.com/stis60/) 
 
 *-- TIm Modul 60*
