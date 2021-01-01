@@ -321,43 +321,9 @@ summary(res.aov)
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
-karena p-value lebih besar dari 0.05 maka gagal tolak H0 yang berarti
-ada minimal satu rata-rata yang berbeda
+karena p-value lebih besar dari 0.01 maka gagal tolak H0 yang berarti semuanya memiliki rata-rata yang sama
 
-Posthoc Test
-------------
 
-``` r
-TukeyHSD(res.aov)
-```
-
-    ##   Tukey multiple comparisons of means
-    ##     95% family-wise confidence level
-    ## 
-    ## Fit: aov(formula = pengeluaran ~ status_pekerjaan, data = df)
-    ## 
-    ## $status_pekerjaan
-    ##                                          diff        lwr        upr     p adj
-    ## lainnya-buruh/karyawan              -52812.70 -396449.21 290823.815 0.9784789
-    ## penerima pendapatan-buruh/karyawan -270282.08 -544601.09   4036.923 0.0551230
-    ## pengusaha-buruh/karyawan            -69320.12 -235356.31  96716.078 0.7003703
-    ## penerima pendapatan-lainnya        -217469.38 -623943.55 189004.778 0.5086546
-    ## pengusaha-lainnya                   -16507.42 -359346.08 326331.240 0.9993013
-    ## pengusaha-penerima pendapatan       200961.97  -72356.91 474280.842 0.2287469
-
-Dari p-value adjusted terlihat bahwa yang memiliki p-value yang kecil
-adalah rata-rata penerima pendapatan dengan buruh/karyawan.
-
-``` r
-tapply(df$pengeluaran, df$status_pekerjaan, mean)
-```
-
-    ##      buruh/karyawan             lainnya penerima pendapatan           pengusaha 
-    ##           1064088.2           1011275.5            793806.1            994768.1
-
-Dari rata-rata diatas terlihat jelas bahwa perbedaan rata-rata antara
-buruh/karyawan dengan penerima pendapatan sangat berbeda jauh dan secara
-statistik itu yang membuat hipotesisi pada anova ditolak
 
 Nomor 3
 =======

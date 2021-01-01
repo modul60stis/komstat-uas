@@ -1788,7 +1788,6 @@ document.addEventListener('DOMContentLoaded', function() {
             <li><a href="#asumsi-kesamaan-varians">Asumsi Kesamaan Varians</a></li>
             <li><a href="#cek-normalitas">Cek Normalitas</a></li>
             <li><a href="#uji-anova">Uji Anova</a></li>
-            <li><a href="#posthoc-test">Posthoc Test</a></li>
             </ul></li>
             <li><a href="#nomor-3">Nomor 3</a><ul>
             <li><a href="#membuat-tabel-frekuesni">Membuat Tabel Frekuesni</a></li>
@@ -1830,12 +1829,12 @@ library(car)</code></pre>
 kable(sample_n(df, 7))</code></pre>
 <table>
 <colgroup>
-<col width="15%"></col>
-<col width="20%"></col>
-<col width="13%"></col>
-<col width="18%"></col>
-<col width="18%"></col>
 <col width="14%"></col>
+<col width="20%"></col>
+<col width="12%"></col>
+<col width="17%"></col>
+<col width="21%"></col>
+<col width="13%"></col>
 </colgroup>
 <thead>
 <tr class="header">
@@ -1851,15 +1850,47 @@ kable(sample_n(df, 7))</code></pre>
 <tr class="odd">
 <td align="left">pedesaan</td>
 <td align="left">milik sendiri</td>
-<td align="right">1324590.5</td>
+<td align="right">408317.9</td>
+<td align="left">industri</td>
+<td align="left">pengusaha</td>
+<td align="right">1</td>
+</tr>
+<tr class="even">
+<td align="left">pedesaan</td>
+<td align="left">milik sendiri</td>
+<td align="right">751178.6</td>
+<td align="left">industri</td>
+<td align="left">pengusaha</td>
+<td align="right">2</td>
+</tr>
+<tr class="odd">
+<td align="left">pedesaan</td>
+<td align="left">milik sendiri</td>
+<td align="right">516196.4</td>
 <td align="left">pertanian</td>
-<td align="left">buruh/karyawan</td>
+<td align="left">pengusaha</td>
 <td align="right">1</td>
 </tr>
 <tr class="even">
 <td align="left">perkotaan</td>
+<td align="left">sewa</td>
+<td align="right">1493107.1</td>
+<td align="left">industri</td>
+<td align="left">penerima pendapatan</td>
+<td align="right">3</td>
+</tr>
+<tr class="odd">
+<td align="left">pedesaan</td>
 <td align="left">milik sendiri</td>
-<td align="right">588321.4</td>
+<td align="right">313557.1</td>
+<td align="left">industri</td>
+<td align="left">penerima pendapatan</td>
+<td align="right">1</td>
+</tr>
+<tr class="even">
+<td align="left">pedesaan</td>
+<td align="left">milik sendiri</td>
+<td align="right">1630316.7</td>
 <td align="left">pertanian</td>
 <td align="left">buruh/karyawan</td>
 <td align="right">3</td>
@@ -1867,41 +1898,9 @@ kable(sample_n(df, 7))</code></pre>
 <tr class="odd">
 <td align="left">pedesaan</td>
 <td align="left">milik sendiri</td>
-<td align="right">647506.0</td>
-<td align="left">industri</td>
-<td align="left">pengusaha</td>
-<td align="right">2</td>
-</tr>
-<tr class="even">
-<td align="left">pedesaan</td>
-<td align="left">milik sendiri</td>
-<td align="right">846732.1</td>
-<td align="left">industri</td>
-<td align="left">lainnya</td>
-<td align="right">2</td>
-</tr>
-<tr class="odd">
-<td align="left">pedesaan</td>
-<td align="left">milik sendiri</td>
-<td align="right">657166.7</td>
-<td align="left">industri</td>
+<td align="right">494940.5</td>
+<td align="left">pertanian</td>
 <td align="left">buruh/karyawan</td>
-<td align="right">3</td>
-</tr>
-<tr class="even">
-<td align="left">pedesaan</td>
-<td align="left">milik sendiri</td>
-<td align="right">1078089.3</td>
-<td align="left">industri</td>
-<td align="left">buruh/karyawan</td>
-<td align="right">3</td>
-</tr>
-<tr class="odd">
-<td align="left">pedesaan</td>
-<td align="left">milik sendiri</td>
-<td align="right">505833.3</td>
-<td align="left">industri</td>
-<td align="left">pengusaha</td>
 <td align="right">3</td>
 </tr>
 </tbody>
@@ -2095,29 +2094,7 @@ summary(res.aov)</code></pre>
 ## Residuals        174 2.690e+13 1.546e+11                 
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
-<p>karena p-value lebih besar dari 0.05 maka gagal tolak H0 yang berarti ada minimal satu rata-rata yang berbeda</p>
-</div>
-<div id="posthoc-test" class="section level2">
-<h2>Posthoc Test</h2>
-<pre class="r"><code>TukeyHSD(res.aov)</code></pre>
-<pre><code>##   Tukey multiple comparisons of means
-##     95% family-wise confidence level
-## 
-## Fit: aov(formula = pengeluaran ~ status_pekerjaan, data = df)
-## 
-## $status_pekerjaan
-##                                          diff        lwr        upr     p adj
-## lainnya-buruh/karyawan              -52812.70 -396449.21 290823.815 0.9784789
-## penerima pendapatan-buruh/karyawan -270282.08 -544601.09   4036.923 0.0551230
-## pengusaha-buruh/karyawan            -69320.12 -235356.31  96716.078 0.7003703
-## penerima pendapatan-lainnya        -217469.38 -623943.55 189004.778 0.5086546
-## pengusaha-lainnya                   -16507.42 -359346.08 326331.240 0.9993013
-## pengusaha-penerima pendapatan       200961.97  -72356.91 474280.842 0.2287469</code></pre>
-<p>Dari p-value adjusted terlihat bahwa yang memiliki p-value yang kecil adalah rata-rata penerima pendapatan dengan buruh/karyawan.</p>
-<pre class="r"><code>tapply(df$pengeluaran, df$status_pekerjaan, mean)</code></pre>
-<pre><code>##      buruh/karyawan             lainnya penerima pendapatan           pengusaha 
-##           1064088.2           1011275.5            793806.1            994768.1</code></pre>
-<p>Dari rata-rata diatas terlihat jelas bahwa perbedaan rata-rata antara buruh/karyawan dengan penerima pendapatan sangat berbeda jauh dan secara statistik itu yang membuat hipotesisi pada anova ditolak</p>
+<p>karena p-value lebih besar dari 0.05 maka gagal tolak H0 yang berarti semuanya memiliki rata-rata yang sama</p>
 </div>
 </div>
 <div id="nomor-3" class="section level1">

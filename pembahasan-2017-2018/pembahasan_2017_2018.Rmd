@@ -2,7 +2,7 @@
 title: "Pembahasan 2017/2018"
 author: "Tim Modul"
 date: "12/30/2020"
-output: html_document
+output: rmdformats::downcute
 ---
 
 # Load Data dan Library
@@ -116,20 +116,7 @@ res.aov <- aov(pengeluaran ~ status_pekerjaan, data = df)
 summary(res.aov)
 ```
 
-karena p-value lebih besar dari 0.05 maka gagal tolak H0 yang berarti ada minimal satu rata-rata yang berbeda
-
-## Posthoc Test
-```{r}
-TukeyHSD(res.aov)
-```
-
-Dari p-value adjusted terlihat bahwa yang memiliki p-value yang kecil adalah rata-rata penerima pendapatan dengan buruh/karyawan.
-
-```{r}
-tapply(df$pengeluaran, df$status_pekerjaan, mean)
-```
-
-Dari rata-rata diatas terlihat jelas bahwa perbedaan rata-rata antara buruh/karyawan dengan penerima pendapatan sangat berbeda jauh dan secara statistik itu yang membuat hipotesisi pada anova ditolak
+karena p-value lebih besar dari 0.05 maka gagal tolak H0 yang berarti semuanya memiliki rata-rata yang sama
 
 # Nomor 3
 Seorang peneliti berhipotesis bahwa proporsi jenis lantai terluas berbeda antara daerah perkotaan dan pedesaan. Tetapkan 𝐻0 dan 𝐻1 serta lakukan uji yang sesuai untuk menjawab pertanyaan tersebut. (15)
