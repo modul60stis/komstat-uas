@@ -1,0 +1,122 @@
+---
+title: "Fungsi Penting"
+author: "Tim Modul"
+date: "1/1/2021"
+output: 
+      md_document:
+          variant: markdown_github
+---
+
+```{r message=FALSE, warning=FALSE, include=FALSE}
+library(knitr)
+```
+
+Berikut beberapa fungsi yang cukup penting dan sering digunakan.
+```{r}
+set.seed(270100)
+df <- data.frame(x = rbinom(15, 50, 0.5),
+                 y = rnorm(15, 27, 1),
+                 z = rt(15, 23),
+                 k = sample(c("Ya", "Tidak"), 15, replace = TRUE))
+kable(df)
+```
+
+# Fungsi `rowSums`
+Fungsi ini digunakan untuk menjumlah perbaris, argument `na.rm = TRUE` harus dicantumkan jika terdapat data yang NA.
+
+```{r}
+rowSums(df[1:3], na.rm = TRUE)
+```
+
+# Fungsi `colSums`
+Fungsi ini digunakan untuk menjumlah perkolom, argument `na.rm = TRUE` harus dicantumkan jika terdapat data yang NA.
+
+```{r}
+colSums(df[1:3], na.rm = TRUE)
+```
+
+# Fungsi `rowMeans`
+Fungsi ini digunakan untuk untuk mencari rata-rata perbaris, argument `na.rm = TRUE` harus dicantumkan jika terdapat data yang NA.
+
+```{r}
+rowMeans(df[1:3], na.rm = TRUE)
+```
+
+# Fungsi `colMeans`
+Fungsi ini digunakan untuk untuk mencari rata-rata perkolom, argument `na.rm = TRUE` harus dicantumkan jika terdapat data yang NA.
+
+```{r}
+colMeans(df[1:3], na.rm = TRUE)
+```
+
+# Fungsi `sample`
+Digunakan untuk mengambil sampel, argument `replace` digunakan untuk mengatur apakah sampel diambil secara replacement atau tidak.
+```{r}
+sample(df$x, 5, replace = TRUE)
+```
+
+# Fungsi `apply`
+`apply(X, MARGIN, FUN)`, argumen `MARGIN` untuk mengatur arah iterasi, 1 untuk perbaris dan 2 untuk perkolom. Argumen `FUN` diisi oleh fungsi yang akan diterapkan periterasi.
+
+Misalnya kita ingin mencari varians perkolom, maka `MARGIN = 2` dan `FUN = var`
+```{r}
+apply(df[1:3], 2, var)
+```
+
+# Fungsi `lapply`
+Sama seperti `apply` tetapi hanya iterasi untuk perkolom. Kembalian dari fungsi ini berupa `list`
+```{r}
+lapply(df[1:3], sd)
+```
+
+# Fungsi `sapply`
+Sama seperti `lapply` tetapi yang dikembalikan berupa vector jika dimensi setiap iterasinya 1 dan matrix jika lebih dari satu. Jika berbeda maka akan dikembalikan sebagai list seperti fungsi `lapply`
+
+```{r}
+sapply(df, is.numeric)
+```
+
+```{r}
+sapply(df[1:3], quantile)
+```
+
+# Fungsi `split`
+Digunakan untuk membagi data berdasarkan keriteria tertentu
+```{r}
+split(df$x, df$k)
+```
+
+# Fungsi `tapply`
+Digunakan untuk membagi data berdasarkan kriteria tertentu kemudian menerapkan suatu fungsi pada setiap katagori
+```{r}
+tapply(df$x, df$k, shapiro.test)
+```
+
+# Tambahan
+Setiap argumen `FUN` kita dapat mengirimkan fungsi buatan sendiri atau fungsi anonymous.
+
+```{r}
+lapply(df[1:3], function(x){
+      c(max = max(x), 
+        min = min(x),
+        median = median(x))
+})
+```
+
+```{r}
+sapply(df[1:3], function(x){
+      c(mean = mean(x), 
+        sd = sd(x),
+        var = var(x))
+})
+```
+
+```{r}
+tapply(df$x, df$k, function(x){
+      c(mean = mean(x), 
+        sd = sd(x),
+        var = var(x))
+})
+```
+
+
