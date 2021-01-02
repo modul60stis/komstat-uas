@@ -9,6 +9,7 @@ library(dplyr)
 library(knitr)
 library(nycflights13)
 library(reshape2)
+library(car)
 ```
 
 Nomor 1
@@ -75,213 +76,213 @@ kable(sample_n(data, 10))
 <tbody>
 <tr class="odd">
 <td style="text-align: right;">2013</td>
-<td style="text-align: right;">3</td>
-<td style="text-align: right;">2</td>
-<td style="text-align: right;">810</td>
-<td style="text-align: right;">813</td>
-<td style="text-align: right;">-3</td>
-<td style="text-align: right;">953</td>
-<td style="text-align: right;">1018</td>
-<td style="text-align: right;">-25</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">29</td>
+<td style="text-align: right;">753</td>
+<td style="text-align: right;">759</td>
+<td style="text-align: right;">-6</td>
+<td style="text-align: right;">942</td>
+<td style="text-align: right;">1020</td>
+<td style="text-align: right;">-38</td>
 <td style="text-align: left;">EV</td>
-<td style="text-align: right;">4315</td>
-<td style="text-align: left;">N14168</td>
-<td style="text-align: left;">EWR</td>
-<td style="text-align: left;">MYR</td>
-<td style="text-align: right;">85</td>
-<td style="text-align: right;">550</td>
-<td style="text-align: right;">8</td>
-<td style="text-align: right;">13</td>
-<td style="text-align: left;">2013-03-02 08:00:00</td>
+<td style="text-align: right;">4991</td>
+<td style="text-align: left;">N722EV</td>
+<td style="text-align: left;">LGA</td>
+<td style="text-align: left;">MCI</td>
+<td style="text-align: right;">144</td>
+<td style="text-align: right;">1107</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">59</td>
+<td style="text-align: left;">2013-05-29 07:00:00</td>
 </tr>
 <tr class="even">
-<td style="text-align: right;">2013</td>
-<td style="text-align: right;">12</td>
-<td style="text-align: right;">31</td>
-<td style="text-align: right;">800</td>
-<td style="text-align: right;">805</td>
-<td style="text-align: right;">-5</td>
-<td style="text-align: right;">944</td>
-<td style="text-align: right;">1000</td>
-<td style="text-align: right;">-16</td>
-<td style="text-align: left;">9E</td>
-<td style="text-align: right;">2932</td>
-<td style="text-align: left;">N936XJ</td>
-<td style="text-align: left;">JFK</td>
-<td style="text-align: left;">RDU</td>
-<td style="text-align: right;">80</td>
-<td style="text-align: right;">427</td>
-<td style="text-align: right;">8</td>
-<td style="text-align: right;">5</td>
-<td style="text-align: left;">2013-12-31 08:00:00</td>
-</tr>
-<tr class="odd">
 <td style="text-align: right;">2013</td>
 <td style="text-align: right;">1</td>
-<td style="text-align: right;">5</td>
-<td style="text-align: right;">1829</td>
-<td style="text-align: right;">1810</td>
-<td style="text-align: right;">19</td>
-<td style="text-align: right;">2141</td>
-<td style="text-align: right;">2132</td>
+<td style="text-align: right;">13</td>
+<td style="text-align: right;">1737</td>
+<td style="text-align: right;">1550</td>
+<td style="text-align: right;">107</td>
+<td style="text-align: right;">1901</td>
+<td style="text-align: right;">1710</td>
+<td style="text-align: right;">111</td>
+<td style="text-align: left;">WN</td>
+<td style="text-align: right;">4215</td>
+<td style="text-align: left;">N769SW</td>
+<td style="text-align: left;">EWR</td>
+<td style="text-align: left;">MDW</td>
+<td style="text-align: right;">120</td>
+<td style="text-align: right;">711</td>
+<td style="text-align: right;">15</td>
+<td style="text-align: right;">50</td>
+<td style="text-align: left;">2013-01-13 15:00:00</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">2013</td>
 <td style="text-align: right;">9</td>
-<td style="text-align: left;">B6</td>
-<td style="text-align: right;">217</td>
-<td style="text-align: left;">N523JB</td>
-<td style="text-align: left;">JFK</td>
-<td style="text-align: left;">LGB</td>
-<td style="text-align: right;">338</td>
-<td style="text-align: right;">2465</td>
-<td style="text-align: right;">18</td>
-<td style="text-align: right;">10</td>
-<td style="text-align: left;">2013-01-05 18:00:00</td>
-</tr>
-<tr class="even">
-<td style="text-align: right;">2013</td>
-<td style="text-align: right;">8</td>
-<td style="text-align: right;">4</td>
-<td style="text-align: right;">1719</td>
-<td style="text-align: right;">1643</td>
-<td style="text-align: right;">36</td>
-<td style="text-align: right;">1816</td>
-<td style="text-align: right;">1806</td>
-<td style="text-align: right;">10</td>
-<td style="text-align: left;">EV</td>
-<td style="text-align: right;">5978</td>
-<td style="text-align: left;">N12540</td>
-<td style="text-align: left;">EWR</td>
-<td style="text-align: left;">ROC</td>
-<td style="text-align: right;">43</td>
-<td style="text-align: right;">246</td>
-<td style="text-align: right;">16</td>
-<td style="text-align: right;">43</td>
-<td style="text-align: left;">2013-08-04 16:00:00</td>
-</tr>
-<tr class="odd">
-<td style="text-align: right;">2013</td>
 <td style="text-align: right;">6</td>
-<td style="text-align: right;">2</td>
-<td style="text-align: right;">NA</td>
-<td style="text-align: right;">2023</td>
-<td style="text-align: right;">NA</td>
-<td style="text-align: right;">NA</td>
-<td style="text-align: right;">2325</td>
-<td style="text-align: right;">NA</td>
-<td style="text-align: left;">UA</td>
-<td style="text-align: right;">698</td>
-<td style="text-align: left;">NA</td>
+<td style="text-align: right;">2044</td>
+<td style="text-align: right;">2005</td>
+<td style="text-align: right;">39</td>
+<td style="text-align: right;">2148</td>
+<td style="text-align: right;">2130</td>
+<td style="text-align: right;">18</td>
+<td style="text-align: left;">MQ</td>
+<td style="text-align: right;">3604</td>
+<td style="text-align: left;">N518MQ</td>
 <td style="text-align: left;">EWR</td>
-<td style="text-align: left;">DFW</td>
-<td style="text-align: right;">NA</td>
-<td style="text-align: right;">1372</td>
+<td style="text-align: left;">ORD</td>
+<td style="text-align: right;">99</td>
+<td style="text-align: right;">719</td>
 <td style="text-align: right;">20</td>
-<td style="text-align: right;">23</td>
-<td style="text-align: left;">2013-06-02 20:00:00</td>
-</tr>
-<tr class="even">
-<td style="text-align: right;">2013</td>
-<td style="text-align: right;">4</td>
-<td style="text-align: right;">22</td>
-<td style="text-align: right;">1640</td>
-<td style="text-align: right;">1644</td>
-<td style="text-align: right;">-4</td>
-<td style="text-align: right;">1957</td>
-<td style="text-align: right;">1945</td>
-<td style="text-align: right;">12</td>
-<td style="text-align: left;">UA</td>
-<td style="text-align: right;">1627</td>
-<td style="text-align: left;">N76522</td>
-<td style="text-align: left;">EWR</td>
-<td style="text-align: left;">PBI</td>
-<td style="text-align: right;">174</td>
-<td style="text-align: right;">1023</td>
-<td style="text-align: right;">16</td>
-<td style="text-align: right;">44</td>
-<td style="text-align: left;">2013-04-22 16:00:00</td>
-</tr>
-<tr class="odd">
-<td style="text-align: right;">2013</td>
-<td style="text-align: right;">8</td>
-<td style="text-align: right;">8</td>
-<td style="text-align: right;">658</td>
-<td style="text-align: right;">705</td>
-<td style="text-align: right;">-7</td>
-<td style="text-align: right;">955</td>
-<td style="text-align: right;">1015</td>
-<td style="text-align: right;">-20</td>
-<td style="text-align: left;">AA</td>
-<td style="text-align: right;">2279</td>
-<td style="text-align: left;">N3CUAA</td>
-<td style="text-align: left;">LGA</td>
-<td style="text-align: left;">MIA</td>
-<td style="text-align: right;">136</td>
-<td style="text-align: right;">1096</td>
-<td style="text-align: right;">7</td>
 <td style="text-align: right;">5</td>
-<td style="text-align: left;">2013-08-08 07:00:00</td>
+<td style="text-align: left;">2013-09-06 20:00:00</td>
 </tr>
 <tr class="even">
 <td style="text-align: right;">2013</td>
 <td style="text-align: right;">1</td>
 <td style="text-align: right;">29</td>
-<td style="text-align: right;">641</td>
-<td style="text-align: right;">645</td>
-<td style="text-align: right;">-4</td>
-<td style="text-align: right;">934</td>
-<td style="text-align: right;">952</td>
-<td style="text-align: right;">-18</td>
-<td style="text-align: left;">UA</td>
-<td style="text-align: right;">719</td>
-<td style="text-align: left;">N802UA</td>
-<td style="text-align: left;">EWR</td>
-<td style="text-align: left;">DFW</td>
-<td style="text-align: right;">213</td>
-<td style="text-align: right;">1372</td>
+<td style="text-align: right;">1150</td>
+<td style="text-align: right;">1200</td>
+<td style="text-align: right;">-10</td>
+<td style="text-align: right;">1303</td>
+<td style="text-align: right;">1309</td>
+<td style="text-align: right;">-6</td>
+<td style="text-align: left;">US</td>
+<td style="text-align: right;">2173</td>
+<td style="text-align: left;">N705UW</td>
+<td style="text-align: left;">LGA</td>
+<td style="text-align: left;">DCA</td>
+<td style="text-align: right;">47</td>
+<td style="text-align: right;">214</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">2013-01-29 12:00:00</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">2013</td>
 <td style="text-align: right;">6</td>
-<td style="text-align: right;">45</td>
-<td style="text-align: left;">2013-01-29 06:00:00</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">654</td>
+<td style="text-align: right;">700</td>
+<td style="text-align: right;">-6</td>
+<td style="text-align: right;">807</td>
+<td style="text-align: right;">830</td>
+<td style="text-align: right;">-23</td>
+<td style="text-align: left;">UA</td>
+<td style="text-align: right;">1603</td>
+<td style="text-align: left;">N77258</td>
+<td style="text-align: left;">LGA</td>
+<td style="text-align: left;">ORD</td>
+<td style="text-align: right;">115</td>
+<td style="text-align: right;">733</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">2013-06-02 07:00:00</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2013</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">30</td>
+<td style="text-align: right;">1930</td>
+<td style="text-align: right;">1855</td>
+<td style="text-align: right;">35</td>
+<td style="text-align: right;">2057</td>
+<td style="text-align: right;">2037</td>
+<td style="text-align: right;">20</td>
+<td style="text-align: left;">EV</td>
+<td style="text-align: right;">5222</td>
+<td style="text-align: left;">N719EV</td>
+<td style="text-align: left;">LGA</td>
+<td style="text-align: left;">BGR</td>
+<td style="text-align: right;">56</td>
+<td style="text-align: right;">378</td>
+<td style="text-align: right;">18</td>
+<td style="text-align: right;">55</td>
+<td style="text-align: left;">2013-04-30 18:00:00</td>
 </tr>
 <tr class="odd">
 <td style="text-align: right;">2013</td>
 <td style="text-align: right;">11</td>
-<td style="text-align: right;">11</td>
-<td style="text-align: right;">1941</td>
-<td style="text-align: right;">1900</td>
-<td style="text-align: right;">41</td>
-<td style="text-align: right;">2115</td>
-<td style="text-align: right;">2043</td>
-<td style="text-align: right;">32</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">1052</td>
+<td style="text-align: right;">1059</td>
+<td style="text-align: right;">-7</td>
+<td style="text-align: right;">1218</td>
+<td style="text-align: right;">1230</td>
+<td style="text-align: right;">-12</td>
 <td style="text-align: left;">UA</td>
-<td style="text-align: right;">223</td>
-<td style="text-align: left;">N421UA</td>
+<td style="text-align: right;">775</td>
+<td style="text-align: left;">N835UA</td>
 <td style="text-align: left;">EWR</td>
 <td style="text-align: left;">ORD</td>
-<td style="text-align: right;">131</td>
+<td style="text-align: right;">124</td>
 <td style="text-align: right;">719</td>
-<td style="text-align: right;">19</td>
-<td style="text-align: right;">0</td>
-<td style="text-align: left;">2013-11-11 19:00:00</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">59</td>
+<td style="text-align: left;">2013-11-05 10:00:00</td>
 </tr>
 <tr class="even">
 <td style="text-align: right;">2013</td>
-<td style="text-align: right;">5</td>
-<td style="text-align: right;">5</td>
-<td style="text-align: right;">708</td>
-<td style="text-align: right;">710</td>
-<td style="text-align: right;">-2</td>
-<td style="text-align: right;">810</td>
-<td style="text-align: right;">840</td>
-<td style="text-align: right;">-30</td>
-<td style="text-align: left;">WN</td>
-<td style="text-align: right;">1171</td>
-<td style="text-align: left;">N450WN</td>
-<td style="text-align: left;">EWR</td>
-<td style="text-align: left;">BNA</td>
-<td style="text-align: right;">108</td>
-<td style="text-align: right;">748</td>
-<td style="text-align: right;">7</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">24</td>
+<td style="text-align: right;">1022</td>
+<td style="text-align: right;">1025</td>
+<td style="text-align: right;">-3</td>
+<td style="text-align: right;">1302</td>
+<td style="text-align: right;">1308</td>
+<td style="text-align: right;">-6</td>
+<td style="text-align: left;">B6</td>
+<td style="text-align: right;">925</td>
+<td style="text-align: left;">N585JB</td>
+<td style="text-align: left;">JFK</td>
+<td style="text-align: left;">TPA</td>
+<td style="text-align: right;">134</td>
+<td style="text-align: right;">1005</td>
 <td style="text-align: right;">10</td>
-<td style="text-align: left;">2013-05-05 07:00:00</td>
+<td style="text-align: right;">25</td>
+<td style="text-align: left;">2013-08-24 10:00:00</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">2013</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">2025</td>
+<td style="text-align: right;">227</td>
+<td style="text-align: right;">241</td>
+<td style="text-align: right;">2333</td>
+<td style="text-align: right;">188</td>
+<td style="text-align: left;">UA</td>
+<td style="text-align: right;">771</td>
+<td style="text-align: left;">N518UA</td>
+<td style="text-align: left;">JFK</td>
+<td style="text-align: left;">LAX</td>
+<td style="text-align: right;">308</td>
+<td style="text-align: right;">2475</td>
+<td style="text-align: right;">20</td>
+<td style="text-align: right;">25</td>
+<td style="text-align: left;">2013-05-08 20:00:00</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2013</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">21</td>
+<td style="text-align: right;">910</td>
+<td style="text-align: right;">914</td>
+<td style="text-align: right;">-4</td>
+<td style="text-align: right;">1233</td>
+<td style="text-align: right;">1206</td>
+<td style="text-align: right;">27</td>
+<td style="text-align: left;">B6</td>
+<td style="text-align: right;">883</td>
+<td style="text-align: left;">N645JB</td>
+<td style="text-align: left;">JFK</td>
+<td style="text-align: left;">MCO</td>
+<td style="text-align: right;">142</td>
+<td style="text-align: right;">944</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">14</td>
+<td style="text-align: left;">2013-03-21 09:00:00</td>
 </tr>
 </tbody>
 </table>
@@ -581,6 +582,116 @@ kable(head(data, 10))
 ### Join Data Planes
 
 Untuk mengambil tahun pembuatan pesawat
+
+``` r
+kable(sample_n(planes, 7))
+```
+
+<table style="width:100%;">
+<colgroup>
+<col style="width: 7%" />
+<col style="width: 4%" />
+<col style="width: 23%" />
+<col style="width: 17%" />
+<col style="width: 14%" />
+<col style="width: 7%" />
+<col style="width: 5%" />
+<col style="width: 5%" />
+<col style="width: 9%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">tailnum</th>
+<th style="text-align: right;">year</th>
+<th style="text-align: left;">type</th>
+<th style="text-align: left;">manufacturer</th>
+<th style="text-align: left;">model</th>
+<th style="text-align: right;">engines</th>
+<th style="text-align: right;">seats</th>
+<th style="text-align: right;">speed</th>
+<th style="text-align: left;">engine</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">N936AT</td>
+<td style="text-align: right;">1999</td>
+<td style="text-align: left;">Fixed wing multi engine</td>
+<td style="text-align: left;">BOEING</td>
+<td style="text-align: left;">717-200</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">100</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: left;">Turbo-fan</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">N561AA</td>
+<td style="text-align: right;">1991</td>
+<td style="text-align: left;">Fixed wing multi engine</td>
+<td style="text-align: left;">MCDONNELL DOUGLAS</td>
+<td style="text-align: left;">DC-9-82(MD-82)</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">172</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: left;">Turbo-fan</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">N557AS</td>
+<td style="text-align: right;">2006</td>
+<td style="text-align: left;">Fixed wing multi engine</td>
+<td style="text-align: left;">BOEING</td>
+<td style="text-align: left;">737-890</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">149</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: left;">Turbo-fan</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">N18114</td>
+<td style="text-align: right;">2002</td>
+<td style="text-align: left;">Fixed wing multi engine</td>
+<td style="text-align: left;">EMBRAER</td>
+<td style="text-align: left;">EMB-145XR</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">55</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: left;">Turbo-fan</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">N761RR</td>
+<td style="text-align: right;">2000</td>
+<td style="text-align: left;">Fixed wing multi engine</td>
+<td style="text-align: left;">BOEING</td>
+<td style="text-align: left;">737-7H4</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">140</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: left;">Turbo-fan</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">N1604R</td>
+<td style="text-align: right;">1999</td>
+<td style="text-align: left;">Fixed wing multi engine</td>
+<td style="text-align: left;">BOEING</td>
+<td style="text-align: left;">767-332</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">330</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: left;">Turbo-fan</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">N603JB</td>
+<td style="text-align: right;">2005</td>
+<td style="text-align: left;">Fixed wing multi engine</td>
+<td style="text-align: left;">AIRBUS</td>
+<td style="text-align: left;">A320-232</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">200</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: left;">Turbo-fan</td>
+</tr>
+</tbody>
+</table>
 
 ``` r
 tmp <- planes %>%
@@ -892,6 +1003,7 @@ saya keberangkatan yang lebih cepat juga tidak baik.
 `Ket : ini tergantung kalian, mau tetap menggunakan nilai yang negatif atau tidak.`
 
 ``` r
+my_caption <- expression(italic("Sumber Data : nycflights13"))
 data %>%
       mutate(dep_delay = abs(dep_delay)) %>%
       group_by(name) %>%
@@ -902,7 +1014,7 @@ data %>%
       labs(x = "Rata-Rata Delay (Menit)",
            y = "",
            title = "10 Maskapai dengan Rata-Rata\nKeterlambatan Keberangkatan Terlama",
-           caption = "Sumber Data : nycflights13") +
+           caption = my_caption) +
       scale_x_continuous(expand = c(0, 0), limit = c(0, 29)) +
       geom_text(aes(label = round(mean_delay, 2)), size = 3, hjust = -0.3) +
       theme_minimal() +
@@ -911,7 +1023,7 @@ data %>%
             plot.margin = margin(20, 10, 20, 0))
 ```
 
-![](pembahasan_2019_2020_files/figure-markdown_github/unnamed-chunk-6-1.png)
+![](pembahasan_2019_2020_files/figure-markdown_github/unnamed-chunk-7-1.png)
 
 Bagian B
 --------
@@ -924,8 +1036,7 @@ dibuat sebelum tahun 2000 dan setelah (termasuk) tahun 2000
 ``` r
 sebelum2000 <- data %>%
       filter(year_manufacture < 2000) %>%
-      select(distance)
-sebelum2000 <- sebelum2000$distance
+      pull(distance)
 mean(sebelum2000)
 ```
 
@@ -934,8 +1045,7 @@ mean(sebelum2000)
 ``` r
 sesudah2000 <- data %>%
       filter(year_manufacture >= 2000) %>%
-      select(distance)
-sesudah2000 <- sesudah2000$distance
+      pull(distance)
 mean(sesudah2000)
 ```
 
@@ -1021,24 +1131,75 @@ bulan_to_musim <- function(x){
 newData <- data %>%
       select(month, dep_delay) %>%
       mutate(season = bulan_to_musim(month))
-
-kable(sample_n(newData, 10))
 ```
 
-|  month|  dep\_delay| season |
-|------:|-----------:|:-------|
-|     12|          -7| Winter |
-|     10|           5| Winter |
-|      6|           4| Summer |
-|      8|           7| Summer |
-|      6|          20| Summer |
-|     11|          -7| Winter |
-|     12|         -10| Winter |
-|      7|         224| Summer |
-|      4|           1| Spring |
-|      7|           0| Summer |
+kable(sample\_n(newData, 10))
 
-### Membuat anova
+### Uji Kesamaan Varians
+
+-   H0 : Semua katagori memiliki varians yang sama
+-   H1 : Minimal ada satu katagori yang berbeda variansnya
+
+``` r
+leveneTest(dep_delay ~ factor(season), data = newData)
+```
+
+    ## Levene's Test for Homogeneity of Variance (center = median)
+    ##           Df F value    Pr(>F)    
+    ## group      2  573.13 < 2.2e-16 ***
+    ##       328518                      
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Terlihat bahwa p-value sangat kecil yang artinya varians berbeda. Maka
+asumsi kesamaan tidak terpenuhi
+
+Karena tidak memenuhi maka harus ke uji nonparametrik
+
+### Uji Kruskal Wallis
+
+-   H0 : Rata-rata delay diketiga musim tidak terdapat perbedaan
+-   H0 : Minimal ada satu rata-rata delay yang berbeda
+
+``` r
+kruskal.test(dep_delay ~ factor(season), data = newData)
+```
+
+    ## 
+    ##  Kruskal-Wallis rank sum test
+    ## 
+    ## data:  dep_delay by factor(season)
+    ## Kruskal-Wallis chi-squared = 780.32, df = 2, p-value < 2.2e-16
+
+Terlihat bahwa p-value yang diperoleh sangat kecil, oleh karena itu
+tolak H0, yang berarti diperoleh cukup bukti bahwa ada perbedaan
+rata-rata diketiga musim. Kita juga dapat menyimpulkan bahwa terdapat
+pengaruh yang signifikan terhadap musim dan rata-rata delay
+keberangkatan.
+
+### Posthoc Test Nonparametrik
+
+``` r
+pairwise.wilcox.test(newData$dep_delay, newData$season, p.adjust.method = "BH")
+```
+
+    ## 
+    ##  Pairwise comparisons using Wilcoxon rank sum test with continuity correction 
+    ## 
+    ## data:  newData$dep_delay and newData$season 
+    ## 
+    ##        Spring Summer
+    ## Summer <2e-16 -     
+    ## Winter <2e-16 <2e-16
+    ## 
+    ## P value adjustment method: BH
+
+Terlihat bahwa p-value dari semuanya sangat kecil sehingga semua
+pasangan memiliki rata-rata yang berbeda
+
+### Menggunakan anova
+
+Jika tetap memaksakan menggunakan Anova
 
 -   H0 : Rata-rata delay diketiga musim tidak terdapat perbedaan
 -   H0 : Minimal ada satu rata-rata delay yang berbeda
@@ -1061,7 +1222,7 @@ rata-rata diketiga musim. Kita juga dapat menyimpulkan bahwa terdapat
 pengaruh yang signifikan terhadap musim dan rata-rata delay
 keberangkatan.
 
-### Posthoc Test
+### Posthoc Test Parametrik
 
 Karena tolak H0, maka perlu digunakan analisis perbandingan ganda atau
 posthoc tes untuk melihat rata-rata mana yang berbeda, kali ini akan
@@ -1114,6 +1275,7 @@ Indikator pertama adalah ketepatan keberangkatan dan kedatangan sesuai
 dengan jadwal
 
 ``` r
+my_caption <- expression(italic("Sumber Data : nycflights13"))
 data %>% 
       mutate(dep_delay = abs(dep_delay),
              arr_delay = abs(arr_delay)) %>%
@@ -1131,7 +1293,7 @@ data %>%
            fill = "",
            x = "", 
            y = "",
-           caption = "Sumber Data : nycflights13") +
+           caption = my_caption) +
       scale_y_continuous(expand = c(0, NA)) +
       scale_fill_brewer(labels = c("Delay Keberangkatan", "Delay Kedatangan"),
                         palette = "Set2") +
@@ -1142,7 +1304,7 @@ data %>%
             legend.box.margin = margin(-10, 0, 0, 0))
 ```
 
-![](pembahasan_2019_2020_files/figure-markdown_github/unnamed-chunk-15-1.png)
+![](pembahasan_2019_2020_files/figure-markdown_github/unnamed-chunk-19-1.png)
 
 Telihat berdasarkan indikator ini maskapai yang sering delay baik
 keberangkatan maupun kedatangan adalah maskapai Mesa Airlines Inc. (YV)
@@ -1157,6 +1319,7 @@ keberangkatan delay 2 menit maka maksimal kedatangan juga maksimal delay
 melebihi waktu penerbangan yang sesungguhnya.
 
 ``` r
+my_caption <- expression(italic("Sumber Data : nycflights13"))
 data %>%
       filter(arr_delay > dep_delay) %>%
       mutate(tambahan_diudara = arr_delay - dep_delay) %>%
@@ -1171,7 +1334,7 @@ data %>%
       labs(title = "Rata-rata Tambahan Waktu (menit)\ndi Udara Bedasarkan Maskapai",
            x = "Maskapai", 
            y = "",
-           caption = "Sumber Data : nycflights13") +
+           caption = my_caption) +
       scale_y_continuous(expand = c(0, NA), limits = c(0, 23)) +
       theme_minimal() +
       theme(legend.position = "bottom",
@@ -1181,7 +1344,7 @@ data %>%
             axis.text.y = element_blank())
 ```
 
-![](pembahasan_2019_2020_files/figure-markdown_github/unnamed-chunk-16-1.png)
+![](pembahasan_2019_2020_files/figure-markdown_github/unnamed-chunk-20-1.png)
 
 Dari gambar diatas terlihat bahwa rata-rata penambahan waktu di udara
 yang terlama adalah maskapai Frontier Airlines Inc. (F9) dengan
@@ -1214,6 +1377,7 @@ tmp$year_manufacture <- cut(tmp$year_manufacture,
                         breaks = c(1940, 2000, 2010, 2020),
                         labels = c("Bawah 2000", "2000-2010", "2010 Keatas"))
 
+my_caption <- expression(italic("Sumber Data : nycflights13"))
 tmp %>%
       group_by(carrier, year_manufacture) %>%
       summarise(jumlah = n()) %>%
@@ -1223,7 +1387,7 @@ tmp %>%
            fill = "",
            x = "", 
            y = "",
-           caption = "Sumber Data : nycflights13") +
+           caption = my_caption) +
       scale_y_continuous(expand = c(0, NA), limits = c(0, 490)) +
       scale_fill_brewer(palette = "Set2") +
       theme_minimal() +
@@ -1233,7 +1397,7 @@ tmp %>%
             legend.box.margin = margin(-10, 0, 0, 0))
 ```
 
-![](pembahasan_2019_2020_files/figure-markdown_github/unnamed-chunk-17-1.png)
+![](pembahasan_2019_2020_files/figure-markdown_github/unnamed-chunk-21-1.png)
 
 Dari gambar diatas terlihat bahwa maskapai Envoy Air (MQ) hanya memiliki
 pesawat buatan tahun 2000 kebawah. Begitu juga dengan maskapai Delta Air
@@ -1366,18 +1530,18 @@ boot <- na.omit(boot)
 kable(head(boot, 10))
 ```
 
-|  X.Intercept.|          x1|         x2|         x3|          x4|
-|-------------:|-----------:|----------:|----------:|-----------:|
-|     -77.79753|   1.3994456|  -6.214258|  5.3923837|  -0.5203641|
-|     -83.01901|   0.9384370|   6.527948|  2.4237446|  -0.6997208|
-|    -204.01603|   1.1933086|   3.522704|  2.9551130|   0.6659934|
-|      56.23304|   0.9813456|   6.574565|  2.1910512|  -1.9250367|
-|      55.79471|   0.5597352|   7.070500|  0.1016433|   0.0436427|
-|    -420.05189|  -0.1266460|  13.652848|  3.9403794|   0.1998043|
-|    -106.58107|   1.0449743|   7.615841|  3.3264335|  -1.6394015|
-|    -272.64972|   1.0359366|   7.859321|  4.3410696|  -0.9638953|
-|     140.02170|   0.6709124|   6.940030|  0.4959609|  -1.1414851|
-|      18.71389|   0.8237582|   3.812860|  3.4837226|  -1.9239175|
+|  X.Intercept.|         x1|          x2|          x3|          x4|
+|-------------:|----------:|-----------:|-----------:|-----------:|
+|    -200.82535|  0.4959189|    9.020619|   3.0238073|  -0.4028767|
+|      83.08341|  0.4488484|    8.213278|   0.4541674|  -0.7423121|
+|      87.98823|  0.8347213|    4.257348|  -0.0994088|   0.4355232|
+|     -14.36041|  0.0708321|   15.152090|   0.4225460|  -1.1408030|
+|     -43.87274|  1.0405163|    6.785520|   2.9932106|  -1.7414229|
+|     -46.52637|  0.9815677|    3.635519|   3.0144950|  -0.9835863|
+|      69.48670|  0.7674316|    5.843104|   0.4394242|  -0.2094507|
+|     -27.12306|  0.6220318|    8.607828|   1.5967005|  -0.8267580|
+|     -74.62740|  0.8540055|    6.197184|   1.6923947|  -0.0296967|
+|      38.44392|  2.0968319|  -25.584343|   8.1887766|   0.2009645|
 
 ### Menghitung Confident Interval
 
@@ -1401,11 +1565,11 @@ result <- sapply(boot, function(x){
 result
 ```
 
-    ##             X.Intercept.         x1         x2        x3         x4
-    ## mean_boot      -73.75676  0.8352395   5.961844  2.497919 -0.6558498
-    ## se_boot        306.75684  0.9777747  18.257665  4.447452  1.4900035
-    ## ci_95_lower   -675.71842 -1.0834884 -29.865928 -6.229501 -3.5797455
-    ## ci_95_upper    528.20489  2.7539673  41.789616 11.225340  2.2680459
+    ##             X.Intercept.         x1         x2         x3          x4
+    ## mean_boot      -89.77532  0.8896111   4.457791   3.230329  -0.8102054
+    ## se_boot        394.68027  2.1620821  53.107421  19.955226   4.8354255
+    ## ci_95_lower   -864.27277 -3.3531322 -99.757103 -35.928639 -10.2989613
+    ## ci_95_upper    684.72214  5.1323545 108.672685  42.389296   8.6785505
 
 Bagian C
 --------
@@ -1492,5 +1656,4 @@ upper
 Terlihat bahwa dengan tingkat kepercayaan 95%, perbedaan antara proporsi
 virus yang dapat dinonaktifkan oleh antivirus A dan B berada antara
 `0.03` dan `0.1`
-
 

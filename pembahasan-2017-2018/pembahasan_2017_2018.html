@@ -1850,58 +1850,58 @@ kable(sample_n(df, 7))</code></pre>
 <tr class="odd">
 <td align="left">pedesaan</td>
 <td align="left">milik sendiri</td>
-<td align="right">408317.9</td>
+<td align="right">396119.0</td>
 <td align="left">industri</td>
-<td align="left">pengusaha</td>
-<td align="right">1</td>
+<td align="left">buruh/karyawan</td>
+<td align="right">3</td>
 </tr>
 <tr class="even">
 <td align="left">pedesaan</td>
 <td align="left">milik sendiri</td>
-<td align="right">751178.6</td>
+<td align="right">1277940.5</td>
 <td align="left">industri</td>
-<td align="left">pengusaha</td>
+<td align="left">penerima pendapatan</td>
 <td align="right">2</td>
 </tr>
 <tr class="odd">
 <td align="left">pedesaan</td>
 <td align="left">milik sendiri</td>
-<td align="right">516196.4</td>
-<td align="left">pertanian</td>
-<td align="left">pengusaha</td>
-<td align="right">1</td>
+<td align="right">771509.5</td>
+<td align="left">industri</td>
+<td align="left">buruh/karyawan</td>
+<td align="right">2</td>
 </tr>
 <tr class="even">
 <td align="left">perkotaan</td>
-<td align="left">sewa</td>
-<td align="right">1493107.1</td>
-<td align="left">industri</td>
-<td align="left">penerima pendapatan</td>
-<td align="right">3</td>
-</tr>
-<tr class="odd">
-<td align="left">pedesaan</td>
 <td align="left">milik sendiri</td>
-<td align="right">313557.1</td>
-<td align="left">industri</td>
-<td align="left">penerima pendapatan</td>
+<td align="right">1923007.1</td>
+<td align="left">pertanian</td>
+<td align="left">buruh/karyawan</td>
 <td align="right">1</td>
 </tr>
-<tr class="even">
-<td align="left">pedesaan</td>
+<tr class="odd">
+<td align="left">perkotaan</td>
 <td align="left">milik sendiri</td>
-<td align="right">1630316.7</td>
+<td align="right">1740284.5</td>
+<td align="left">pertanian</td>
+<td align="left">pengusaha</td>
+<td align="right">2</td>
+</tr>
+<tr class="even">
+<td align="left">perkotaan</td>
+<td align="left">milik sendiri</td>
+<td align="right">1390595.2</td>
 <td align="left">pertanian</td>
 <td align="left">buruh/karyawan</td>
 <td align="right">3</td>
 </tr>
 <tr class="odd">
-<td align="left">pedesaan</td>
+<td align="left">perkotaan</td>
 <td align="left">milik sendiri</td>
-<td align="right">494940.5</td>
+<td align="right">783131.0</td>
 <td align="left">pertanian</td>
-<td align="left">buruh/karyawan</td>
-<td align="right">3</td>
+<td align="left">penerima pendapatan</td>
+<td align="right">1</td>
 </tr>
 </tbody>
 </table>
@@ -2099,7 +2099,7 @@ summary(res.aov)</code></pre>
 </div>
 <div id="nomor-3" class="section level1">
 <h1>Nomor 3</h1>
-<p>Seorang peneliti berhipotesis bahwa proporsi jenis lantai terluas berbeda antara daerah perkotaan dan pedesaan. Tetapkan 𝐻0 dan 𝐻1 serta lakukan uji yang sesuai untuk menjawab pertanyaan tersebut. (15)</p>
+<p>Seorang peneliti berhipotesis bahwa proporsi jenis lantai berbeda antara daerah perkotaan dan pedesaan. Tetapkan 𝐻0 dan 𝐻1 serta lakukan uji yang sesuai untuk menjawab pertanyaan tersebut. (15)</p>
 <div id="membuat-tabel-frekuesni" class="section level2">
 <h2>Membuat Tabel Frekuesni</h2>
 <pre class="r"><code>tabel &lt;- table(df$status_daerah, df$jenis_lantai)
@@ -2141,7 +2141,7 @@ kable(tabel)</code></pre>
 ## 
 ## data:  tabel
 ## X-squared = 0.97352, df = 2, p-value = 0.6146</code></pre>
-<p>Karena p-value lebih besar dari 0.05, maka tolak H0, dengan tingkat signifikansi 5% dan data yang ada proporsi jenis lantai tidak berbeda antara daerah perkotaan dan pedesaan</p>
+<p>Karena p-value lebih besar dari 0.05, maka gagal tolak H0, dengan tingkat signifikansi 5% dan data yang ada proporsi jenis lantai tidak berbeda antara daerah perkotaan dan pedesaan</p>
 </div>
 </div>
 <div id="nomor-4" class="section level1">

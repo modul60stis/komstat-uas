@@ -2,7 +2,9 @@
 title: "Pembahasan Tahun 2019/2020"
 author: "Tim Modul"
 date: "12/29/2020"
-output: html_document
+output: 
+   md_document:
+       variant: markdown_github
 ---
 
 # Load Library
@@ -12,6 +14,7 @@ library(dplyr)
 library(knitr)
 library(nycflights13)
 library(reshape2)
+library(car)
 ```
 
 # Nomor 1
@@ -40,6 +43,10 @@ kable(head(data, 10))
 ### Join Data Planes
 Untuk mengambil tahun pembuatan pesawat
 ```{r}
+kable(sample_n(planes, 7))
+```
+
+```{r}
 tmp <- planes %>%
       select(tailnum, year) %>%
       rename(year_manufacture = year)
@@ -56,6 +63,7 @@ Variabel `dep_delay` mengandung nilai positif dan negatif. Nilai negatif artinya
 
 `Ket : ini tergantung kalian, mau tetap menggunakan nilai yang negatif atau tidak.`
 ```{r message=FALSE, warning=FALSE}
+my_caption <- expression(italic("Sumber Data : nycflights13"))
 data %>%
       mutate(dep_delay = abs(dep_delay)) %>%
       group_by(name) %>%
@@ -66,7 +74,7 @@ data %>%
       labs(x = "Rata-Rata Delay (Menit)",
            y = "",
            title = "10 Maskapai dengan Rata-Rata\nKeterlambatan Keberangkatan Terlama",
-           caption = "Sumber Data : nycflights13") +
+           caption = my_caption) +
       scale_x_continuous(expand = c(0, 0), limit = c(0, 29)) +
       geom_text(aes(label = round(mean_delay, 2)), size = 3, hjust = -0.3) +
       theme_minimal() +
@@ -83,15 +91,13 @@ Uji apakah terdapat beda rata-rata jarak yang ditempuh dari pesawat yang dibuat 
 ```{r}
 sebelum2000 <- data %>%
       filter(year_manufacture < 2000) %>%
-      select(distance)
-sebelum2000 <- sebelum2000$distance
+      pull(distance)
 mean(sebelum2000)
 ```
 ```{r}
 sesudah2000 <- data %>%
       filter(year_manufacture >= 2000) %>%
-      select(distance)
-sesudah2000 <- sesudah2000$distance
+      pull(distance)
 mean(sesudah2000)
 ```
 
@@ -141,10 +147,43 @@ newData <- data %>%
       select(month, dep_delay) %>%
       mutate(season = bulan_to_musim(month))
 
+```
 kable(sample_n(newData, 10))
+
+
+### Uji Kesamaan Varians
+
+- H0 : Semua katagori memiliki varians yang sama
+- H1 : Minimal ada satu katagori yang berbeda variansnya
+
+```{r}
+leveneTest(dep_delay ~ factor(season), data = newData)
 ```
 
-### Membuat anova
+Terlihat bahwa p-value sangat kecil yang artinya varians berbeda. Maka asumsi kesamaan tidak terpenuhi
+
+Karena tidak memenuhi maka harus ke uji nonparametrik
+
+### Uji Kruskal Wallis
+
+- H0 : Rata-rata delay diketiga musim tidak terdapat perbedaan
+- H0 : Minimal ada satu rata-rata delay yang berbeda
+
+```{r}
+kruskal.test(dep_delay ~ factor(season), data = newData)
+```
+
+Terlihat bahwa p-value yang diperoleh sangat kecil, oleh karena itu tolak H0, yang berarti diperoleh cukup bukti bahwa ada perbedaan rata-rata diketiga musim. Kita juga dapat menyimpulkan bahwa terdapat pengaruh yang signifikan terhadap musim dan rata-rata delay keberangkatan.
+
+### Posthoc Test Nonparametrik
+```{r}
+pairwise.wilcox.test(newData$dep_delay, newData$season, p.adjust.method = "BH")
+```
+Terlihat bahwa p-value dari semuanya sangat kecil sehingga semua pasangan memiliki rata-rata yang berbeda
+
+### Menggunakan anova
+
+Jika tetap memaksakan menggunakan Anova
 
 - H0 : Rata-rata delay diketiga musim tidak terdapat perbedaan
 - H0 : Minimal ada satu rata-rata delay yang berbeda
@@ -155,7 +194,7 @@ summary(res.aov)
  
 Terlihat bahwa p-value yang diperoleh sangat kecil, oleh karena itu tolak H0, yang berarti diperoleh cukup bukti bahwa ada perbedaan rata-rata diketiga musim. Kita juga dapat menyimpulkan bahwa terdapat pengaruh yang signifikan terhadap musim dan rata-rata delay keberangkatan.
 
-### Posthoc Test
+### Posthoc Test Parametrik
 Karena tolak H0, maka perlu digunakan analisis perbandingan ganda atau posthoc tes untuk melihat rata-rata mana yang berbeda, kali ini akan digunakan uji TukeyHSD
 ```{r}
 TukeyHSD(res.aov)
@@ -178,6 +217,7 @@ Untuk melihat kinerja dari maskapai saya akan menggunakan 2 indikator
 ### Indikator Pertama
 Indikator pertama adalah ketepatan keberangkatan dan kedatangan sesuai dengan jadwal
 ```{r message=FALSE, warning=FALSE}
+my_caption <- expression(italic("Sumber Data : nycflights13"))
 data %>% 
       mutate(dep_delay = abs(dep_delay),
              arr_delay = abs(arr_delay)) %>%
@@ -195,7 +235,7 @@ data %>%
            fill = "",
            x = "", 
            y = "",
-           caption = "Sumber Data : nycflights13") +
+           caption = my_caption) +
       scale_y_continuous(expand = c(0, NA)) +
       scale_fill_brewer(labels = c("Delay Keberangkatan", "Delay Kedatangan"),
                         palette = "Set2") +
@@ -211,6 +251,7 @@ Telihat berdasarkan indikator ini maskapai yang sering delay baik keberangkatan 
 ### Indikator Kedua
 Indikator kedua adalah kesesuaian lama diudara. Misalanya jika keberangkatan delay 2 menit maka maksimal kedatangan juga maksimal delay 2 menit, jika lebih dari itu maka akan dianggap tidak wajar, karena melebihi waktu penerbangan yang sesungguhnya.
 ```{r message=FALSE, warning=FALSE}
+my_caption <- expression(italic("Sumber Data : nycflights13"))
 data %>%
       filter(arr_delay > dep_delay) %>%
       mutate(tambahan_diudara = arr_delay - dep_delay) %>%
@@ -225,7 +266,7 @@ data %>%
       labs(title = "Rata-rata Tambahan Waktu (menit)\ndi Udara Bedasarkan Maskapai",
            x = "Maskapai", 
            y = "",
-           caption = "Sumber Data : nycflights13") +
+           caption = my_caption) +
       scale_y_continuous(expand = c(0, NA), limits = c(0, 23)) +
       theme_minimal() +
       theme(legend.position = "bottom",
@@ -254,6 +295,7 @@ tmp$year_manufacture <- cut(tmp$year_manufacture,
                         breaks = c(1940, 2000, 2010, 2020),
                         labels = c("Bawah 2000", "2000-2010", "2010 Keatas"))
 
+my_caption <- expression(italic("Sumber Data : nycflights13"))
 tmp %>%
       group_by(carrier, year_manufacture) %>%
       summarise(jumlah = n()) %>%
@@ -263,7 +305,7 @@ tmp %>%
            fill = "",
            x = "", 
            y = "",
-           caption = "Sumber Data : nycflights13") +
+           caption = my_caption) +
       scale_y_continuous(expand = c(0, NA), limits = c(0, 490)) +
       scale_fill_brewer(palette = "Set2") +
       theme_minimal() +

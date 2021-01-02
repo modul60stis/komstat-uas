@@ -363,7 +363,7 @@ chisq.test(tabel)
     ## data:  tabel
     ## X-squared = 0.97352, df = 2, p-value = 0.6146
 
-Karena p-value lebih besar dari 0.05, maka tolak H0, dengan tingkat
+Karena p-value lebih besar dari 0.05, maka gagal tolak H0, dengan tingkat
 signifikansi 5% dan data yang ada proporsi jenis lantai tidak berbeda
 antara daerah perkotaan dan pedesaan
 

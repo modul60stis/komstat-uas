@@ -119,7 +119,7 @@ summary(res.aov)
 karena p-value lebih besar dari 0.05 maka gagal tolak H0 yang berarti semuanya memiliki rata-rata yang sama
 
 # Nomor 3
-Seorang peneliti berhipotesis bahwa proporsi jenis lantai terluas berbeda antara daerah perkotaan dan pedesaan. Tetapkan 𝐻0 dan 𝐻1 serta lakukan uji yang sesuai untuk menjawab pertanyaan tersebut. (15)
+Seorang peneliti berhipotesis bahwa proporsi jenis lantai berbeda antara daerah perkotaan dan pedesaan. Tetapkan 𝐻0 dan 𝐻1 serta lakukan uji yang sesuai untuk menjawab pertanyaan tersebut. (15)
 
 
 ## Membuat Tabel Frekuesni
@@ -137,7 +137,7 @@ kable(tabel)
 chisq.test(tabel)
 ```
 
-Karena p-value lebih besar dari 0.05, maka tolak H0, dengan tingkat signifikansi 5% dan data yang ada proporsi jenis lantai tidak berbeda antara daerah perkotaan dan pedesaan
+Karena p-value lebih besar dari 0.05, maka gagal tolak H0, dengan tingkat signifikansi 5% dan data yang ada proporsi jenis lantai tidak berbeda antara daerah perkotaan dan pedesaan
 
 # Nomor 4
 
