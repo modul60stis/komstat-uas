@@ -2,9 +2,7 @@
 title: "Pembahasan Tahun 2019/2020"
 author: "Tim Modul"
 date: "12/29/2020"
-output: 
-   md_document:
-       variant: markdown_github
+output: html_document
 ---
 
 # Load Library
@@ -15,6 +13,7 @@ library(knitr)
 library(nycflights13)
 library(reshape2)
 library(car)
+library(nortest)
 ```
 
 # Nomor 1
@@ -112,7 +111,26 @@ var.test(sebelum2000, sesudah2000)
 
 Karena p-value lebih kecil dari 0.05, maka tolak H0 dan dapat diasumsikan varians tidak sama
 
-### Uji Beda Rata-Rata
+### Uji Kenormalan
+
+- H0 : Data berdistribusi normal
+- H1 : Data tidak berdistribusi normal
+
+**Ket : Fungs `shapiro.test` di R tidak dapat digunakan jika sampel lebih dari 5000, oleh karena itu saya menggantinya dengan Lillifors Test**
+
+```{r}
+lillie.test(sebelum2000)
+```
+
+```{r}
+lillie.test(sesudah2000)
+```
+
+Terlihat bahwa p-value keduanya sangat kecil artinya tolak H0, yang berarti keduanya tidak berdistribusi normal
+
+**Sekarang ada dua pilihan tetap melanjutkan pakai t-test akan tetapi data tidak normal atau menggunakan test nonparametrik yaitu Wilcoxon Test**
+
+### T Test (Parametrik)
 
 - H0 : Rata-rata keduanya sama
 - H1 : Rata-rata keduanya berbeda
@@ -124,6 +142,19 @@ t.test(sebelum2000, sesudah2000, var.equal = FALSE)
 Karena p-value lebih kecil dari 0.05, maka tolak H0.
 
 Degan tingkat signifikansi 5% diperoleh cukup bukti bahwa rata-rata jarak yang ditempuh dari pesawat yang dibuat sebelum tahun 2000 dan setelah (termasuk) tahun 2000. Jika dilihat pesawat dengan tahun pembuatan 2000 kebawah memiliki jarak tempuh yang lebih besar yaitu sebesar 1282.4 miles sedangkan pesawat yang dibuat tahun 2000 atau keatas hanya sebesar 977.9458 miles
+
+### Wilcoxon Test (Non-paremetrik)
+
+- H0 : Median keduanya sama
+- H1 : Median keduanya berbeda
+
+```{r}
+wilcox.test(sebelum2000, sesudah2000, alternative = "two.sided")
+```
+
+Karena p-value lebih kecil dari 0.05, maka tolak H0.
+
+Degan tingkat signifikansi 5% diperoleh cukup bukti bahwa rata-rata jarak yang ditempuh dari pesawat yang dibuat sebelum tahun 2000 dan setelah (termasuk) tahun 2000.
 
 ## Bagian C
 Uji apakah terdapat beda rata-rata waktu keterlambatan keberangkatan dari tiga musim (winter: oct-jan, spring: feb-may, summer: june-sept). Lakukan uji lanjutan jika diperlukan.

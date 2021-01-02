@@ -10,6 +10,7 @@ library(knitr)
 library(nycflights13)
 library(reshape2)
 library(car)
+library(nortest)
 ```
 
 Nomor 1
@@ -76,213 +77,213 @@ kable(sample_n(data, 10))
 <tbody>
 <tr class="odd">
 <td style="text-align: right;">2013</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">17</td>
+<td style="text-align: right;">1701</td>
+<td style="text-align: right;">1700</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1935</td>
+<td style="text-align: right;">1955</td>
+<td style="text-align: right;">-20</td>
+<td style="text-align: left;">AA</td>
+<td style="text-align: right;">257</td>
+<td style="text-align: left;">N3AUAA</td>
+<td style="text-align: left;">JFK</td>
+<td style="text-align: left;">LAS</td>
+<td style="text-align: right;">311</td>
+<td style="text-align: right;">2248</td>
+<td style="text-align: right;">17</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">2013-01-17 17:00:00</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2013</td>
+<td style="text-align: right;">9</td>
 <td style="text-align: right;">5</td>
-<td style="text-align: right;">29</td>
-<td style="text-align: right;">753</td>
-<td style="text-align: right;">759</td>
-<td style="text-align: right;">-6</td>
-<td style="text-align: right;">942</td>
-<td style="text-align: right;">1020</td>
-<td style="text-align: right;">-38</td>
+<td style="text-align: right;">1255</td>
+<td style="text-align: right;">1300</td>
+<td style="text-align: right;">-5</td>
+<td style="text-align: right;">1500</td>
+<td style="text-align: right;">1521</td>
+<td style="text-align: right;">-21</td>
 <td style="text-align: left;">EV</td>
-<td style="text-align: right;">4991</td>
-<td style="text-align: left;">N722EV</td>
-<td style="text-align: left;">LGA</td>
-<td style="text-align: left;">MCI</td>
-<td style="text-align: right;">144</td>
-<td style="text-align: right;">1107</td>
+<td style="text-align: right;">5148</td>
+<td style="text-align: left;">N197PQ</td>
+<td style="text-align: left;">EWR</td>
+<td style="text-align: left;">ATL</td>
+<td style="text-align: right;">100</td>
+<td style="text-align: right;">746</td>
+<td style="text-align: right;">13</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">2013-09-05 13:00:00</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">2013</td>
 <td style="text-align: right;">7</td>
-<td style="text-align: right;">59</td>
-<td style="text-align: left;">2013-05-29 07:00:00</td>
+<td style="text-align: right;">13</td>
+<td style="text-align: right;">1559</td>
+<td style="text-align: right;">1600</td>
+<td style="text-align: right;">-1</td>
+<td style="text-align: right;">1854</td>
+<td style="text-align: right;">1908</td>
+<td style="text-align: right;">-14</td>
+<td style="text-align: left;">DL</td>
+<td style="text-align: right;">706</td>
+<td style="text-align: left;">N3753</td>
+<td style="text-align: left;">JFK</td>
+<td style="text-align: left;">AUS</td>
+<td style="text-align: right;">187</td>
+<td style="text-align: right;">1521</td>
+<td style="text-align: right;">16</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">2013-07-13 16:00:00</td>
 </tr>
 <tr class="even">
 <td style="text-align: right;">2013</td>
 <td style="text-align: right;">1</td>
-<td style="text-align: right;">13</td>
-<td style="text-align: right;">1737</td>
-<td style="text-align: right;">1550</td>
-<td style="text-align: right;">107</td>
-<td style="text-align: right;">1901</td>
-<td style="text-align: right;">1710</td>
-<td style="text-align: right;">111</td>
-<td style="text-align: left;">WN</td>
-<td style="text-align: right;">4215</td>
-<td style="text-align: left;">N769SW</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">2002</td>
+<td style="text-align: right;">2005</td>
+<td style="text-align: right;">-3</td>
+<td style="text-align: right;">2249</td>
+<td style="text-align: right;">2311</td>
+<td style="text-align: right;">-22</td>
+<td style="text-align: left;">UA</td>
+<td style="text-align: right;">983</td>
+<td style="text-align: left;">N802UA</td>
 <td style="text-align: left;">EWR</td>
-<td style="text-align: left;">MDW</td>
-<td style="text-align: right;">120</td>
-<td style="text-align: right;">711</td>
-<td style="text-align: right;">15</td>
-<td style="text-align: right;">50</td>
-<td style="text-align: left;">2013-01-13 15:00:00</td>
+<td style="text-align: left;">TPA</td>
+<td style="text-align: right;">147</td>
+<td style="text-align: right;">997</td>
+<td style="text-align: right;">20</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: left;">2013-01-09 20:00:00</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">2013</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">556</td>
+<td style="text-align: right;">600</td>
+<td style="text-align: right;">-4</td>
+<td style="text-align: right;">831</td>
+<td style="text-align: right;">849</td>
+<td style="text-align: right;">-18</td>
+<td style="text-align: left;">B6</td>
+<td style="text-align: right;">79</td>
+<td style="text-align: left;">N527JB</td>
+<td style="text-align: left;">JFK</td>
+<td style="text-align: left;">MCO</td>
+<td style="text-align: right;">137</td>
+<td style="text-align: right;">944</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">2013-03-05 06:00:00</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2013</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">14</td>
+<td style="text-align: right;">1354</td>
+<td style="text-align: right;">1400</td>
+<td style="text-align: right;">-6</td>
+<td style="text-align: right;">1449</td>
+<td style="text-align: right;">1506</td>
+<td style="text-align: right;">-17</td>
+<td style="text-align: left;">US</td>
+<td style="text-align: right;">2130</td>
+<td style="text-align: left;">N948UW</td>
+<td style="text-align: left;">LGA</td>
+<td style="text-align: left;">BOS</td>
+<td style="text-align: right;">41</td>
+<td style="text-align: right;">184</td>
+<td style="text-align: right;">14</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">2013-05-14 14:00:00</td>
 </tr>
 <tr class="odd">
 <td style="text-align: right;">2013</td>
 <td style="text-align: right;">9</td>
-<td style="text-align: right;">6</td>
-<td style="text-align: right;">2044</td>
-<td style="text-align: right;">2005</td>
-<td style="text-align: right;">39</td>
-<td style="text-align: right;">2148</td>
-<td style="text-align: right;">2130</td>
-<td style="text-align: right;">18</td>
-<td style="text-align: left;">MQ</td>
-<td style="text-align: right;">3604</td>
-<td style="text-align: left;">N518MQ</td>
-<td style="text-align: left;">EWR</td>
-<td style="text-align: left;">ORD</td>
-<td style="text-align: right;">99</td>
-<td style="text-align: right;">719</td>
-<td style="text-align: right;">20</td>
-<td style="text-align: right;">5</td>
-<td style="text-align: left;">2013-09-06 20:00:00</td>
-</tr>
-<tr class="even">
-<td style="text-align: right;">2013</td>
 <td style="text-align: right;">1</td>
-<td style="text-align: right;">29</td>
-<td style="text-align: right;">1150</td>
-<td style="text-align: right;">1200</td>
-<td style="text-align: right;">-10</td>
-<td style="text-align: right;">1303</td>
-<td style="text-align: right;">1309</td>
-<td style="text-align: right;">-6</td>
-<td style="text-align: left;">US</td>
-<td style="text-align: right;">2173</td>
-<td style="text-align: left;">N705UW</td>
-<td style="text-align: left;">LGA</td>
-<td style="text-align: left;">DCA</td>
-<td style="text-align: right;">47</td>
-<td style="text-align: right;">214</td>
-<td style="text-align: right;">12</td>
-<td style="text-align: right;">0</td>
-<td style="text-align: left;">2013-01-29 12:00:00</td>
-</tr>
-<tr class="odd">
-<td style="text-align: right;">2013</td>
+<td style="text-align: right;">805</td>
+<td style="text-align: right;">806</td>
+<td style="text-align: right;">-1</td>
+<td style="text-align: right;">906</td>
+<td style="text-align: right;">918</td>
+<td style="text-align: right;">-12</td>
+<td style="text-align: left;">EV</td>
+<td style="text-align: right;">4148</td>
+<td style="text-align: left;">N21537</td>
+<td style="text-align: left;">EWR</td>
+<td style="text-align: left;">BOS</td>
+<td style="text-align: right;">41</td>
+<td style="text-align: right;">200</td>
+<td style="text-align: right;">8</td>
 <td style="text-align: right;">6</td>
-<td style="text-align: right;">2</td>
-<td style="text-align: right;">654</td>
-<td style="text-align: right;">700</td>
-<td style="text-align: right;">-6</td>
-<td style="text-align: right;">807</td>
-<td style="text-align: right;">830</td>
-<td style="text-align: right;">-23</td>
-<td style="text-align: left;">UA</td>
-<td style="text-align: right;">1603</td>
-<td style="text-align: left;">N77258</td>
-<td style="text-align: left;">LGA</td>
-<td style="text-align: left;">ORD</td>
-<td style="text-align: right;">115</td>
-<td style="text-align: right;">733</td>
-<td style="text-align: right;">7</td>
-<td style="text-align: right;">0</td>
-<td style="text-align: left;">2013-06-02 07:00:00</td>
+<td style="text-align: left;">2013-09-01 08:00:00</td>
 </tr>
 <tr class="even">
 <td style="text-align: right;">2013</td>
-<td style="text-align: right;">4</td>
-<td style="text-align: right;">30</td>
-<td style="text-align: right;">1930</td>
-<td style="text-align: right;">1855</td>
-<td style="text-align: right;">35</td>
-<td style="text-align: right;">2057</td>
-<td style="text-align: right;">2037</td>
-<td style="text-align: right;">20</td>
-<td style="text-align: left;">EV</td>
-<td style="text-align: right;">5222</td>
-<td style="text-align: left;">N719EV</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">24</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">900</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">1146</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: left;">DL</td>
+<td style="text-align: right;">1747</td>
+<td style="text-align: left;">N932DL</td>
 <td style="text-align: left;">LGA</td>
-<td style="text-align: left;">BGR</td>
-<td style="text-align: right;">56</td>
-<td style="text-align: right;">378</td>
-<td style="text-align: right;">18</td>
-<td style="text-align: right;">55</td>
-<td style="text-align: left;">2013-04-30 18:00:00</td>
+<td style="text-align: left;">ATL</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">762</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">2013-12-24 09:00:00</td>
 </tr>
 <tr class="odd">
 <td style="text-align: right;">2013</td>
 <td style="text-align: right;">11</td>
-<td style="text-align: right;">5</td>
-<td style="text-align: right;">1052</td>
-<td style="text-align: right;">1059</td>
-<td style="text-align: right;">-7</td>
-<td style="text-align: right;">1218</td>
-<td style="text-align: right;">1230</td>
-<td style="text-align: right;">-12</td>
-<td style="text-align: left;">UA</td>
-<td style="text-align: right;">775</td>
-<td style="text-align: left;">N835UA</td>
-<td style="text-align: left;">EWR</td>
-<td style="text-align: left;">ORD</td>
-<td style="text-align: right;">124</td>
-<td style="text-align: right;">719</td>
-<td style="text-align: right;">10</td>
-<td style="text-align: right;">59</td>
-<td style="text-align: left;">2013-11-05 10:00:00</td>
-</tr>
-<tr class="even">
-<td style="text-align: right;">2013</td>
-<td style="text-align: right;">8</td>
-<td style="text-align: right;">24</td>
-<td style="text-align: right;">1022</td>
-<td style="text-align: right;">1025</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">834</td>
+<td style="text-align: right;">837</td>
 <td style="text-align: right;">-3</td>
-<td style="text-align: right;">1302</td>
-<td style="text-align: right;">1308</td>
-<td style="text-align: right;">-6</td>
-<td style="text-align: left;">B6</td>
-<td style="text-align: right;">925</td>
-<td style="text-align: left;">N585JB</td>
-<td style="text-align: left;">JFK</td>
-<td style="text-align: left;">TPA</td>
-<td style="text-align: right;">134</td>
-<td style="text-align: right;">1005</td>
-<td style="text-align: right;">10</td>
-<td style="text-align: right;">25</td>
-<td style="text-align: left;">2013-08-24 10:00:00</td>
-</tr>
-<tr class="odd">
-<td style="text-align: right;">2013</td>
-<td style="text-align: right;">5</td>
-<td style="text-align: right;">8</td>
+<td style="text-align: right;">952</td>
+<td style="text-align: right;">940</td>
 <td style="text-align: right;">12</td>
-<td style="text-align: right;">2025</td>
-<td style="text-align: right;">227</td>
-<td style="text-align: right;">241</td>
-<td style="text-align: right;">2333</td>
-<td style="text-align: right;">188</td>
-<td style="text-align: left;">UA</td>
-<td style="text-align: right;">771</td>
-<td style="text-align: left;">N518UA</td>
-<td style="text-align: left;">JFK</td>
-<td style="text-align: left;">LAX</td>
-<td style="text-align: right;">308</td>
-<td style="text-align: right;">2475</td>
-<td style="text-align: right;">20</td>
-<td style="text-align: right;">25</td>
-<td style="text-align: left;">2013-05-08 20:00:00</td>
+<td style="text-align: left;">EV</td>
+<td style="text-align: right;">4625</td>
+<td style="text-align: left;">N11535</td>
+<td style="text-align: left;">EWR</td>
+<td style="text-align: left;">BWI</td>
+<td style="text-align: right;">34</td>
+<td style="text-align: right;">169</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">37</td>
+<td style="text-align: left;">2013-11-03 08:00:00</td>
 </tr>
 <tr class="even">
 <td style="text-align: right;">2013</td>
 <td style="text-align: right;">3</td>
-<td style="text-align: right;">21</td>
-<td style="text-align: right;">910</td>
-<td style="text-align: right;">914</td>
-<td style="text-align: right;">-4</td>
-<td style="text-align: right;">1233</td>
-<td style="text-align: right;">1206</td>
-<td style="text-align: right;">27</td>
-<td style="text-align: left;">B6</td>
-<td style="text-align: right;">883</td>
-<td style="text-align: left;">N645JB</td>
-<td style="text-align: left;">JFK</td>
-<td style="text-align: left;">MCO</td>
-<td style="text-align: right;">142</td>
-<td style="text-align: right;">944</td>
-<td style="text-align: right;">9</td>
-<td style="text-align: right;">14</td>
-<td style="text-align: left;">2013-03-21 09:00:00</td>
+<td style="text-align: right;">13</td>
+<td style="text-align: right;">1739</td>
+<td style="text-align: right;">1749</td>
+<td style="text-align: right;">-10</td>
+<td style="text-align: right;">1921</td>
+<td style="text-align: right;">1939</td>
+<td style="text-align: right;">-18</td>
+<td style="text-align: left;">EV</td>
+<td style="text-align: right;">4644</td>
+<td style="text-align: left;">N13955</td>
+<td style="text-align: left;">EWR</td>
+<td style="text-align: left;">CMH</td>
+<td style="text-align: right;">78</td>
+<td style="text-align: right;">463</td>
+<td style="text-align: right;">17</td>
+<td style="text-align: right;">49</td>
+<td style="text-align: left;">2013-03-13 17:00:00</td>
 </tr>
 </tbody>
 </table>
@@ -587,17 +588,17 @@ Untuk mengambil tahun pembuatan pesawat
 kable(sample_n(planes, 7))
 ```
 
-<table style="width:100%;">
+<table>
 <colgroup>
 <col style="width: 7%" />
 <col style="width: 4%" />
-<col style="width: 23%" />
-<col style="width: 17%" />
-<col style="width: 14%" />
+<col style="width: 21%" />
+<col style="width: 26%" />
+<col style="width: 13%" />
 <col style="width: 7%" />
 <col style="width: 5%" />
 <col style="width: 5%" />
-<col style="width: 9%" />
+<col style="width: 8%" />
 </colgroup>
 <thead>
 <tr class="header">
@@ -614,79 +615,79 @@ kable(sample_n(planes, 7))
 </thead>
 <tbody>
 <tr class="odd">
-<td style="text-align: left;">N936AT</td>
-<td style="text-align: right;">1999</td>
+<td style="text-align: left;">N655UA</td>
+<td style="text-align: right;">1992</td>
 <td style="text-align: left;">Fixed wing multi engine</td>
 <td style="text-align: left;">BOEING</td>
-<td style="text-align: left;">717-200</td>
+<td style="text-align: left;">767-322</td>
 <td style="text-align: right;">2</td>
-<td style="text-align: right;">100</td>
+<td style="text-align: right;">330</td>
 <td style="text-align: right;">NA</td>
 <td style="text-align: left;">Turbo-fan</td>
 </tr>
 <tr class="even">
-<td style="text-align: left;">N561AA</td>
-<td style="text-align: right;">1991</td>
+<td style="text-align: left;">N428UA</td>
+<td style="text-align: right;">1995</td>
+<td style="text-align: left;">Fixed wing multi engine</td>
+<td style="text-align: left;">AIRBUS INDUSTRIE</td>
+<td style="text-align: left;">A320-232</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">200</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: left;">Turbo-fan</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">N821AY</td>
+<td style="text-align: right;">2005</td>
+<td style="text-align: left;">Fixed wing multi engine</td>
+<td style="text-align: left;">BOMBARDIER INC</td>
+<td style="text-align: left;">CL-600-2B19</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">55</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: left;">Turbo-fan</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">N596AA</td>
+<td style="text-align: right;">1992</td>
 <td style="text-align: left;">Fixed wing multi engine</td>
 <td style="text-align: left;">MCDONNELL DOUGLAS</td>
-<td style="text-align: left;">DC-9-82(MD-82)</td>
+<td style="text-align: left;">DC-9-83(MD-83)</td>
 <td style="text-align: right;">2</td>
 <td style="text-align: right;">172</td>
 <td style="text-align: right;">NA</td>
 <td style="text-align: left;">Turbo-fan</td>
 </tr>
 <tr class="odd">
-<td style="text-align: left;">N557AS</td>
-<td style="text-align: right;">2006</td>
+<td style="text-align: left;">N915DL</td>
+<td style="text-align: right;">1988</td>
+<td style="text-align: left;">Fixed wing multi engine</td>
+<td style="text-align: left;">MCDONNELL DOUGLAS AIRCRAFT CO</td>
+<td style="text-align: left;">MD-88</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">142</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: left;">Turbo-fan</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">N430US</td>
+<td style="text-align: right;">1989</td>
 <td style="text-align: left;">Fixed wing multi engine</td>
 <td style="text-align: left;">BOEING</td>
-<td style="text-align: left;">737-890</td>
+<td style="text-align: left;">737-4B7</td>
 <td style="text-align: right;">2</td>
 <td style="text-align: right;">149</td>
 <td style="text-align: right;">NA</td>
 <td style="text-align: left;">Turbo-fan</td>
 </tr>
-<tr class="even">
-<td style="text-align: left;">N18114</td>
-<td style="text-align: right;">2002</td>
+<tr class="odd">
+<td style="text-align: left;">N27152</td>
+<td style="text-align: right;">2003</td>
 <td style="text-align: left;">Fixed wing multi engine</td>
 <td style="text-align: left;">EMBRAER</td>
 <td style="text-align: left;">EMB-145XR</td>
 <td style="text-align: right;">2</td>
 <td style="text-align: right;">55</td>
-<td style="text-align: right;">NA</td>
-<td style="text-align: left;">Turbo-fan</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">N761RR</td>
-<td style="text-align: right;">2000</td>
-<td style="text-align: left;">Fixed wing multi engine</td>
-<td style="text-align: left;">BOEING</td>
-<td style="text-align: left;">737-7H4</td>
-<td style="text-align: right;">2</td>
-<td style="text-align: right;">140</td>
-<td style="text-align: right;">NA</td>
-<td style="text-align: left;">Turbo-fan</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">N1604R</td>
-<td style="text-align: right;">1999</td>
-<td style="text-align: left;">Fixed wing multi engine</td>
-<td style="text-align: left;">BOEING</td>
-<td style="text-align: left;">767-332</td>
-<td style="text-align: right;">2</td>
-<td style="text-align: right;">330</td>
-<td style="text-align: right;">NA</td>
-<td style="text-align: left;">Turbo-fan</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">N603JB</td>
-<td style="text-align: right;">2005</td>
-<td style="text-align: left;">Fixed wing multi engine</td>
-<td style="text-align: left;">AIRBUS</td>
-<td style="text-align: left;">A320-232</td>
-<td style="text-align: right;">2</td>
-<td style="text-align: right;">200</td>
 <td style="text-align: right;">NA</td>
 <td style="text-align: left;">Turbo-fan</td>
 </tr>
@@ -1075,7 +1076,43 @@ var.test(sebelum2000, sesudah2000)
 Karena p-value lebih kecil dari 0.05, maka tolak H0 dan dapat
 diasumsikan varians tidak sama
 
-### Uji Beda Rata-Rata
+### Uji Kenormalan
+
+-   H0 : Data berdistribusi normal
+-   H1 : Data tidak berdistribusi normal
+
+**Ket : Fungs `shapiro.test` di R tidak dapat digunakan jika sampel
+lebih dari 5000, oleh karena itu saya menggantinya dengan Lillifors
+Test**
+
+``` r
+lillie.test(sebelum2000)
+```
+
+    ## 
+    ##  Lilliefors (Kolmogorov-Smirnov) normality test
+    ## 
+    ## data:  sebelum2000
+    ## D = 0.19498, p-value < 2.2e-16
+
+``` r
+lillie.test(sesudah2000)
+```
+
+    ## 
+    ##  Lilliefors (Kolmogorov-Smirnov) normality test
+    ## 
+    ## data:  sesudah2000
+    ## D = 0.17459, p-value < 2.2e-16
+
+Terlihat bahwa p-value keduanya sangat kecil artinya tolak H0, yang
+berarti keduanya tidak berdistribusi normal
+
+**Sekarang ada dua pilihan tetap melanjutkan pakai t-test akan tetapi
+data tidak normal atau menggunakan test nonparametrik yaitu Wilcoxon
+Test**
+
+### T Test (Parametrik)
 
 -   H0 : Rata-rata keduanya sama
 -   H1 : Rata-rata keduanya berbeda
@@ -1104,6 +1141,28 @@ setelah (termasuk) tahun 2000. Jika dilihat pesawat dengan tahun
 pembuatan 2000 kebawah memiliki jarak tempuh yang lebih besar yaitu
 sebesar 1282.4 miles sedangkan pesawat yang dibuat tahun 2000 atau
 keatas hanya sebesar 977.9458 miles
+
+### Wilcoxon Test (Non-paremetrik)
+
+-   H0 : Median keduanya sama
+-   H1 : Median keduanya berbeda
+
+``` r
+wilcox.test(sebelum2000, sesudah2000, alternative = "two.sided")
+```
+
+    ## 
+    ##  Wilcoxon rank sum test with continuity correction
+    ## 
+    ## data:  sebelum2000 and sesudah2000
+    ## W = 1.036e+10, p-value < 2.2e-16
+    ## alternative hypothesis: true location shift is not equal to 0
+
+Karena p-value lebih kecil dari 0.05, maka tolak H0.
+
+Degan tingkat signifikansi 5% diperoleh cukup bukti bahwa rata-rata
+jarak yang ditempuh dari pesawat yang dibuat sebelum tahun 2000 dan
+setelah (termasuk) tahun 2000.
 
 Bagian C
 --------
@@ -1304,7 +1363,7 @@ data %>%
             legend.box.margin = margin(-10, 0, 0, 0))
 ```
 
-![](pembahasan_2019_2020_files/figure-markdown_github/unnamed-chunk-19-1.png)
+![](pembahasan_2019_2020_files/figure-markdown_github/unnamed-chunk-22-1.png)
 
 Telihat berdasarkan indikator ini maskapai yang sering delay baik
 keberangkatan maupun kedatangan adalah maskapai Mesa Airlines Inc. (YV)
@@ -1344,7 +1403,7 @@ data %>%
             axis.text.y = element_blank())
 ```
 
-![](pembahasan_2019_2020_files/figure-markdown_github/unnamed-chunk-20-1.png)
+![](pembahasan_2019_2020_files/figure-markdown_github/unnamed-chunk-23-1.png)
 
 Dari gambar diatas terlihat bahwa rata-rata penambahan waktu di udara
 yang terlama adalah maskapai Frontier Airlines Inc. (F9) dengan
@@ -1397,7 +1456,7 @@ tmp %>%
             legend.box.margin = margin(-10, 0, 0, 0))
 ```
 
-![](pembahasan_2019_2020_files/figure-markdown_github/unnamed-chunk-21-1.png)
+![](pembahasan_2019_2020_files/figure-markdown_github/unnamed-chunk-24-1.png)
 
 Dari gambar diatas terlihat bahwa maskapai Envoy Air (MQ) hanya memiliki
 pesawat buatan tahun 2000 kebawah. Begitu juga dengan maskapai Delta Air
@@ -1532,16 +1591,16 @@ kable(head(boot, 10))
 
 |  X.Intercept.|         x1|          x2|          x3|          x4|
 |-------------:|----------:|-----------:|-----------:|-----------:|
-|    -200.82535|  0.4959189|    9.020619|   3.0238073|  -0.4028767|
-|      83.08341|  0.4488484|    8.213278|   0.4541674|  -0.7423121|
-|      87.98823|  0.8347213|    4.257348|  -0.0994088|   0.4355232|
-|     -14.36041|  0.0708321|   15.152090|   0.4225460|  -1.1408030|
-|     -43.87274|  1.0405163|    6.785520|   2.9932106|  -1.7414229|
-|     -46.52637|  0.9815677|    3.635519|   3.0144950|  -0.9835863|
-|      69.48670|  0.7674316|    5.843104|   0.4394242|  -0.2094507|
-|     -27.12306|  0.6220318|    8.607828|   1.5967005|  -0.8267580|
-|     -74.62740|  0.8540055|    6.197184|   1.6923947|  -0.0296967|
-|      38.44392|  2.0968319|  -25.584343|   8.1887766|   0.2009645|
+|     -46.48222|  0.9776377|    5.764029|   3.3392115|  -1.7431564|
+|     -49.80511|  1.3615080|   -5.704941|   4.6130991|  -0.2169228|
+|    -121.96840|  1.0372304|    7.433724|   3.4686832|  -1.5681144|
+|    -116.54533|  0.4800446|    8.827871|   2.5579226|  -0.7533226|
+|     -53.66335|  1.5268072|   -6.858113|   5.6695949|  -0.9475021|
+|    -192.26858|  0.7261300|    8.215426|   3.3759542|  -0.7343618|
+|     -98.59526|  1.4905830|  -10.638068|   8.3272426|  -1.9945555|
+|    -300.79477|  0.7348478|    6.011131|   5.5175627|  -1.0834230|
+|     -33.01671|  0.0400535|   15.835354|   0.3741745|  -1.0432616|
+|    -590.75176|  0.2354609|   42.481707|  -3.9306124|   1.5186609|
 
 ### Menghitung Confident Interval
 
@@ -1565,11 +1624,11 @@ result <- sapply(boot, function(x){
 result
 ```
 
-    ##             X.Intercept.         x1         x2         x3          x4
-    ## mean_boot      -89.77532  0.8896111   4.457791   3.230329  -0.8102054
-    ## se_boot        394.68027  2.1620821  53.107421  19.955226   4.8354255
-    ## ci_95_lower   -864.27277 -3.3531322 -99.757103 -35.928639 -10.2989613
-    ## ci_95_upper    684.72214  5.1323545 108.672685  42.389296   8.6785505
+    ##             X.Intercept.         x1         x2        x3         x4
+    ## mean_boot      -81.80211  0.8236627   6.637435  2.374206 -0.6229706
+    ## se_boot        219.25840  0.6055449  11.599990  3.607128  1.0818645
+    ## ci_95_lower   -512.06196 -0.3646232 -16.125707 -4.704210 -2.7459581
+    ## ci_95_upper    348.45774  2.0119486  29.400576  9.452622  1.5000169
 
 Bagian C
 --------
