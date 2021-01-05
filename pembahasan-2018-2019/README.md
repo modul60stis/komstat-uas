@@ -52,7 +52,11 @@ str(df)
     ##  $ colpos   : num  1 1 1 1 1 1 1 1 2 2 ...
     ##  $ treatment: Factor w/ 8 levels "A","B","C","D",..: 4 5 2 8 7 6 3 1 3 2 ...
 
-Dataset terdiri dari 4 variabel. Level pada variabel treatment sebanyak 8. Level A menunjukkan perlakuan dengan kadar sulfur tertinggi, level B menunjukkan perlakuan dengan kadar sulfur tinggi, begitu seterusnya hingga level H yang menunjukkan perlakuan dengan tidak diberi kadar sulfur.
+Dataset terdiri dari 4 variabel. Level pada variabel treatment sebanyak
+8. Level A menunjukkan perlakuan dengan kadar sulfur tertinggi, level B
+menunjukkan perlakuan dengan kadar sulfur tinggi, begitu seterusnya
+hingga level H yang menunjukkan perlakuan dengan tidak diberi kadar
+sulfur.
 
 Bagian A : T-test
 -----------------
@@ -104,29 +108,29 @@ treatment A dan B.
 Dengan hipotesis :
 
 -   H0 : mean A dan mean B sama
--   H1 : mean A - mean B \< 2.8
+-   H1 : mean B - mean A \< 2.8
 
 ``` r
-t.test(popA$decrease, popB$decrease, alternative = "less", mu = 2.8, var.equal = TRUE)
+t.test(popB$decrease, popA$decrease, alternative = "less", mu = 2.8, var.equal = TRUE)
 ```
 
     ## 
     ##  Two Sample t-test
     ## 
-    ## data:  popA$decrease and popB$decrease
-    ## t = -3.5707, df = 14, p-value = 0.001536
+    ## data:  popB$decrease and popA$decrease
+    ## t = 0.12313, df = 14, p-value = 0.5481
     ## alternative hypothesis: true difference in means is less than 2.8
     ## 95 percent confidence interval:
-    ##       -Inf -0.139081
+    ##      -Inf 5.860919
     ## sample estimates:
     ## mean of x mean of y 
-    ##     4.625     7.625
+    ##     7.625     4.625
 
-Didapatkan p-value sebesar 0.0015, di mana angka itu lebih kecil dari
-alpha(0.05). Sehingga keputusan tolak H0. Dengan tingkat signifikansi
-5%, terdapat cukup bukti untuk menyatakan bahwa perbedaan rata-rata
-pengurangan jumlah lebah treatment A dengan treatment B lebih kecil dari
-2.8.
+Didapatkan p-value sebesar 0.5481, di mana angka itu lebih besar dari
+alpha(0.05). Sehingga keputusan gagal tolak H0. Dengan tingkat
+signifikansi 5%, terdapat cukup bukti untuk menyatakan bahwa perbedaan
+rata-rata pengurangan jumlah lebah treatment B dengan treatment A lebih
+kecil dari 2.8.
 
 Bagian b : ANOVA
 ----------------
@@ -258,15 +262,15 @@ car <- mtcars
 kable(dplyr::sample_n(car, 7))
 ```
 
-|                   |   mpg|  cyl|   disp|   hp|  drat|    wt|   qsec|   vs|   am|  gear|  carb|
-|:------------------|-----:|----:|------:|----:|-----:|-----:|------:|----:|----:|-----:|-----:|
-| Maserati Bora     |  15.0|    8|  301.0|  335|  3.54|  3.57|  14.60|    0|    1|     5|     8|
-| Hornet Sportabout |  18.7|    8|  360.0|  175|  3.15|  3.44|  17.02|    0|    0|     3|     2|
-| Merc 230          |  22.8|    4|  140.8|   95|  3.92|  3.15|  22.90|    1|    0|     4|     2|
-| Dodge Challenger  |  15.5|    8|  318.0|  150|  2.76|  3.52|  16.87|    0|    0|     3|     2|
-| Duster 360        |  14.3|    8|  360.0|  245|  3.21|  3.57|  15.84|    0|    0|     3|     4|
-| Volvo 142E        |  21.4|    4|  121.0|  109|  4.11|  2.78|  18.60|    1|    1|     4|     2|
-| Porsche 914-2     |  26.0|    4|  120.3|   91|  4.43|  2.14|  16.70|    0|    1|     5|     2|
+|                   |   mpg|  cyl|   disp|   hp|  drat|     wt|   qsec|   vs|   am|  gear|  carb|
+|:------------------|-----:|----:|------:|----:|-----:|------:|------:|----:|----:|-----:|-----:|
+| Hornet Sportabout |  18.7|    8|  360.0|  175|  3.15|  3.440|  17.02|    0|    0|     3|     2|
+| Ford Pantera L    |  15.8|    8|  351.0|  264|  4.22|  3.170|  14.50|    0|    1|     5|     4|
+| Hornet 4 Drive    |  21.4|    6|  258.0|  110|  3.08|  3.215|  19.44|    1|    0|     3|     1|
+| Duster 360        |  14.3|    8|  360.0|  245|  3.21|  3.570|  15.84|    0|    0|     3|     4|
+| Merc 230          |  22.8|    4|  140.8|   95|  3.92|  3.150|  22.90|    1|    0|     4|     2|
+| Valiant           |  18.1|    6|  225.0|  105|  2.76|  3.460|  20.22|    1|    0|     3|     1|
+| Lotus Europa      |  30.4|    4|   95.1|  113|  3.77|  1.513|  16.90|    1|    1|     5|     2|
 
 Cek Normalitas
 --------------
@@ -320,7 +324,7 @@ cor.boot <- mean(boot)
 cor.boot
 ```
 
-    ## [1] -0.882523
+    ## [1] -0.8819178
 
 Hasil yang didapatkan tidak berbeda jauh dengan hasil estimasi yang
 dilakukan tradisional :
@@ -337,16 +341,16 @@ Untuk menentukan confident interval terdapat beberapa metode, silahkan
 baca
 [disini](https://towardsdatascience.com/bootstrapping-confidence-intervals-the-basics-b4f28156a8da)
 
-Akan digunakan metode quantile, yaitu 0.1 dan 0.9 (sesuai tingkat
+Akan digunakan metode quantile, yaitu 0.05 dan 0.95 (sesuai tingkat
 kepercayaan yang ditentukan = 90%).
 
 ``` r
-ci <- quantile(boot, c(0.1, 0.9))
+ci <- quantile(boot, c(0.05, 0.95))
 ci
 ```
 
-    ##        10%        90% 
-    ## -0.9324081 -0.8281696
+    ##         5%        95% 
+    ## -0.9436308 -0.8022491
 
 ### Visualisasi
 
@@ -386,16 +390,16 @@ sebesar -0.8946646)
 
 ### Membuat Confident Interval
 
-Akan digunakan metode quantile, yaitu 0.1 dan 0.9 (sesuai tingkat
+Akan digunakan metode quantile, yaitu 0.05 dan 0.95 (sesuai tingkat
 kepercayaan yang ditentukan = 90%).
 
 ``` r
-ci_jeck <- quantile(jeck, c(0.1, 0.9))
+ci_jeck <- quantile(jeck, c(0.05, 0.95))
 ci_jeck
 ```
 
-    ##        10%        90% 
-    ## -0.9019188 -0.8888669
+    ##         5%        95% 
+    ## -0.9067600 -0.8884413
 
 ### Visualisasi
 
