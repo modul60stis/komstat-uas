@@ -1,0 +1,302 @@
+---
+title: "Pembahasan UAS 2020/2021"
+author: "Tim Modul 60"
+date: "1/5/2021"
+output: rmdformats::downcute
+---
+
+**Jawaban ini merupakan jawaban ketika UAS. Jika ada kesalahan silahkan ajukan pull request**
+
+# Load Library
+```{r message=FALSE, warning=FALSE}
+library(dplyr)
+library(ggplot2)
+library(knitr)
+library(gtools)
+library(car)
+```
+
+# Nomor 1
+Diberikan dataset (statistik_kanker_payudara.csv) yang menginformasikan jumlah kasus kanker payudara (per 10.000 populasi) di berbagai negara di belahan dunia beserta informasi mengenai beragam faktor resiko gaya hidup dan kesehatan. Lakukan analisis yang tepat untuk menjawab pertanyaan apakah jumlah kasus kanker signifikan berbeda di benua yang berbeda? Lengkapi analisis Anda dengan menampilkan jumlah dan distribusi kejadian kanker di setiap benua!
+
+## Eksplorasi Data
+
+### Load Data
+```{r}
+kanker <- read.csv("statistik_kanker_payudara.csv")
+kanker %>%
+      sample_n(10) %>%
+      kable()
+```
+
+### Jumlah Kasus Kanker Per Benua
+```{r message=FALSE, warning=FALSE}
+kanker %>%
+      group_by(benua) %>%
+      summarise(jumlah = sum(jumlahKasusKankerPayudara),
+                jumlahNegara = n(),
+                perNegara = jumlah/jumlahNegara) %>%
+      arrange(desc(jumlah)) %>%
+      kable()
+```
+
+Terlihat bahwa jumlah kasus payudara (tanpa melihat jumlah negara) terbanyak ada di Eropa dengan jumlah 1786.2 per 10000 populasi kemudian dilanjutkan dengan benua Afrika, Amerika, Asia dan yang terkecil adalah benua Ocenia hanya sebanyak 175.1 oer 10000 populasi.
+
+Akan tetapi jika jumlah kasus dibagi per jumlah negara dibenua tersebut diperoleh bahwa yang terbanyak adalah benua Ocenia sebanyak 68.7 per 10000 populasi, dilanjut Eropa, Amerika, Asia dan yang terakhir adalah benua Afrika. Hal ini semakin jelas ketika kita membuat visualisasi dari datanya
+
+
+### Visualisasi Persebarannya
+```{r}
+kanker %>%
+      ggplot(aes(x = benua, y = jumlahKasusKankerPayudara)) +
+      geom_boxplot() +
+      theme_minimal() +
+      labs(title =  "Boxplot Jumlah Penderita Kanker Per-benua",
+           x = "",
+           y = "") +
+      theme(plot.title = element_text(hjust = 0.5, size = 15),
+            plot.margin = margin(20, 20, 20, 20))
+```
+
+Untuk menjawab pertanyaan apakah jumlah kasus kanker signifikan berbeda di benua yang berbeda? Akan digunakan uji Anova Satu Arah. Sebelum itu akan diuji asumsi terlebih dahulu
+
+
+## Uji Asumsi Anova
+
+### Uji Kesamaan Varians
+- $H_0$ : Memiliki varians yang sama
+- $H_1$ : Memiliki varians yang berbeda
+
+```{r}
+leveneTest(log(jumlahKasusKankerPayudara) ~ factor(benua), data = kanker)
+```
+
+Yang akan diuji adalah log dari jumlah kasusnya. Diperoleh bahwa p-value sebesar 0.10 yang berarti dengan alpa 5% kita gagal tolak $H_0$, maka dengan tingkat signifikansi 5% diperoleh cukup bukti bahwa semuanya memiliki varian yang sama.
+
+### Uji Asumsi Normalitas
+```{r}
+hasilSplit <- split(kanker$jumlahKasusKankerPayudara, kanker$benua)
+lapply(hasilSplit[1:4], shapiro.test)
+```
+
+Terlihat tidak semua benua berdistribusi normal. Yang normal hanya benua Eropa dan Afrika. Selain itu benua Ocenia tidak dapat dilakukan tes kenormalah karena hanya memiliki dua data
+
+Data beberapa hal diatas diperoleh bahwa asumsi kesamaan varians terpenuhi akan tetapi asumsi normalitas tidak terpenuhi. Oleh karena itu ada dua pilihan
+
+1. Tetap memaksakan menggunakan Anova tetapi asumsi kenormalan terlanggar, yang akan berakibat hasil yang duperoleh tidak akan baik
+2. Menggunakan uji nonparametrik yaitu Uji Kruskal Wallis
+
+## Uji Anova (Parametrik)
+
+- $H_0$ : Rata-rata jumlah kasus disetiap benua sama
+- $H_1$ : Minimal ada satu rata-rata yang berbeda
+```{r}
+res.aov <- aov(log(jumlahKasusKankerPayudara) ~ benua, data = kanker)
+summary(res.aov)
+```
+
+Diperoleh p-value yang sangat kecil, oleh karena itu dengan alpa 5% kita dapat menolak H0, maka dengan tingkat signifikansi 5% diperoleh cukup bukti bahwa minimal ada satu benua yang memiliki jumlah kasus berbeda secara signifikan. Untuk melihat yang mana berbeda akan digunakan uji perbadingan ganda dengan Uji Tukey
+
+### Uji Tukey
+
+- $H_0$ : Rata-rata keduanya sama
+- $H_1$ : Rata-rata keduanya berbeda
+```{r}
+TukeyHSD(res.aov)
+```
+
+Dari hasil diatas diperoleh hanya 3 pasang yang memiliki p-value lebih dari 0.05, yaitu Asia-Africa, Asia-Americas, Oceania-Europe. Hal ini menunjukkan bahwa jumlah kasus kanker antara Asia dan Afrika berbeda secara signifikan, benua Asia dan Amerika juga berbeda secara signifikan, begitu juga dengan benua Ocenia dan Eropa.
+
+
+## Uji Kruskal Wallis (Non-parametrik)
+- $H_0$ : Semuanya memiliki median yang sama
+- $H_1$ : Minimal ada satu median yang berbeda
+```{r}
+kruskal.test(jumlahKasusKankerPayudara ~ benua, data = kanker)
+```
+
+Dari hasil atas diperoleh hal yang sama dengan Anova yaitu tolak $H_0$, yang berarti diperoleh cukup bukti bahwa minimal ada satu benua yang memiliki jumlah kasus berbeda secara signifikan.
+
+### Uji Perbandingan Ganda
+```{r message=FALSE, warning=FALSE}
+pairwise.wilcox.test(kanker$jumlahKasusKankerPayudara, kanker$benua, p.adjust.method = "BH")
+```
+
+Dengan alpa 5% dan dari hasi diatas diperoleh beberapa 3 pasang benua yang memiliki jumlah kasus kanker payudara berbeda secara signifikan yaitu Asia-Amerika, Ocenia-Amerika, dan Ocenia-Eropa. Yang mana hasil ini berbeda satu pasang dengan hasil uji Tukey, yaitu pada uji Tukey yang berbeda adalah Asia-Afrika, tetapi di uji pairwise wwilcoxon tidak berbeda, sementara pada wilcoxon yang berebda ada Ocenia-Amerika, tetapi tidak diuji Tukey
+
+
+# Nomor 2
+Pada tahun 2019, diambilah 33 mahasiswa Polstat STIS untuk diteliti nilai matakuliah Komputasi Statistik nya. Diperoleh nilai matakuliah Komputasi Statistik sebagai berikut: 84, 93, 101, 86, 82, 86, 88, 94, 89, 94, 93, 83, 95, 86, 94, 87, 91, 96, 89, 79, 99, 98, 81, 80, 88, 100, 90, 100, 81, 98, 87, 95, and 94. Populasi dari nilai matakuliah tersebut diyakini berdistribusi normal dengan simpangan baku sebesar 6,8. Lakukan estimasi rata-rata nilai matakuliah pada populasi dengan selang kepercayaan 95% dan interpretasikan hasilnya!
+
+## Memasukkan Data
+Dari soal diketahui bahwa data berdistribusi normal, tidak terbatas dan varian diketahui
+```{r}
+sd <- 6.8
+alpa <- 0.05
+data <- c(84, 93, 101, 86, 82, 86, 88, 94, 89, 94, 93, 83, 95, 86, 94, 87, 91, 96, 89, 79, 99, 98, 81, 80, 88, 100, 90, 100, 81, 98, 87, 95, 94)
+data
+```
+
+## Membuat Fungsi Sendiri
+```{r}
+ci <- function(x, var, alpa = 0.05){
+      rata2 <- mean(x)
+      n <- length(x)
+      zhitung <- qnorm(alpa/2,  lower.tail = FALSE)
+      se <- sqrt(var/n)
+      
+      ci <- rata2 + (c(-1, 1) * zhitung * se)
+      list(ci = paste(round(ci, 3) ,collapse=" - "),
+           batas_atas = ci[2],
+           batas_bawah = ci[1],
+           mean = rata2,
+           se = se,
+           alpa = alpa,
+           n = n,
+           var = var)
+}
+```
+
+## Mencari Confident Interval
+```{r}
+result <- ci(data, sd^2, alpa = alpa)
+kable(data.frame(result))
+```
+
+Dari hasil diatas diperoleh bahwa rata-rata nilai komputasi statistik dari 33 mahasiswa Polstat STIS sebesar 90.33
+
+Dengan tingkat kepercayaan 95% rata-rata nilai komputasi statistik dari mahasiswa Polstat STIS berada pada interval 88.01327 dan 92.653 dengan standard error sebesar 1.183728
+
+
+# Nomor 3
+
+Diberikan dataset (tv.csv) dari beberapa sampel yang menjelaskan durasi (dalam menit) tayangan iklan per setengah jam antara dua kelompok TV yaitu kelompok Basic dan Extended (extra cost). Dari sampel tersebut kita bisa mengestimasi rata-rata durasi seluruh tayangan iklan (populasi) di masing-masing TV dan mengestimasi perbedaaan tayangan iklan di TV Basic dengan di TV Extended. Namun hasil estimasi bergantung dari sampel yang diambil, jika sampel yang diambil berbeda maka hasil estimasipun bisa berbeda.
+
+a. Lakukan teknik bootstrap pada data TV Basic dengan resample sebanyak 1000 kali.
+   - Hitunglah rata-rata durasi tayangan iklan pada TV Basic untuk masing-masing resample
+   - Gambarlah distribusi bootstrap
+   - Hitung standar error dari bootstrap
+   
+b. Lakukan permutation test dengan resample sebanyak 1000 kali untuk menguji apakah terdapat perbedaan rata-rata durasi tayangan iklan antara TV Basic dan TV Extended.
+   - Tuliskan hipotesis null dan hipotesis alternatifnya
+   - Interpretasikan hasilnya (boleh menggunakan visualisasi)
+
+
+## Load Data
+```{r}
+tv <- read.csv("tv.csv")
+kable(head(tv))
+```
+
+## Bagian A
+
+### Filter Data TV Basic
+```{r}
+basic <- tv %>%
+            filter(Cable == "Basic") %>%
+            pull(Time)
+basic
+```
+
+### Iterasi Bootstrap
+
+Akan digunakan `set.seed` akan memiliki hasil yang selalu sama jika program dijalankan
+```{r}
+boot <- NULL
+iter <- 1000
+set.seed(2723)
+for(i in 1:iter){
+      boot_sample <- sample(basic, replace = TRUE)
+      boot[i] <- mean(boot_sample)
+}
+mean(boot)
+```
+
+Dari hasil perhitungan tiap resampling diperoleh penduga rata-rata bootstrap untuk durasi tayangan iklan pada TV Basic sebesar 9.2155 menit
+
+#### Menghitung Bias
+```{r}
+mean(boot) - mean(basic)
+```
+Bias dari penduga bootstrap dengan penduga sampel sebenarnya sebesar 0.0055
+
+#### Menghitung CI 95%
+Untuk menghitung CI digunakan metode percentile
+```{r}
+quantile(boot, probs = c(0.05, 0.95))
+```
+Diperoleh bahwa CI 95% dari penduga bootstrap adalah berada pada interval 8.48 sampai 9.90
+
+### Membuat Visualisasi
+```{r}
+hist(boot, xlab = "", main = "Histogram Penduga Bootstrap")
+abline(v = mean(basic), col = "red", lwd=2)
+```
+
+Garis mereah merupakan rata-rata sebenarnya dari sampel yang ada, terlihat bahwa distribusi bootstrap sudah normal dan nilai meannya sangat mendekati dengan mean rata-rata sampel sesungguhnya.
+
+### Menghitung Standard Error
+Standard Error dari penduga bootstrap adalah standard deviasi dari penduga bootstrap
+```{r}
+sd(boot)
+```
+
+Jadi standar error dari penduga bootstrap sebesar 0.4172165
+
+
+## Bagian B
+
+###  Ambil Data dan Uji Kesamaan Varians
+```{r}
+extend <- tv %>%
+            filter(Cable == "Extended") %>%
+            pull(Time)
+extend
+```
+
+- H0 : Varians Keduanya sama
+- H1 : Varians keduanya berbeda
+
+```{r}
+var.test(basic, extend)
+```
+
+Diperoleh p-value 0.2377, dengan alpa 5% gagal tolak $H_0$, yang berarti diperoleh cukup bukti bahwa varians rata-rata durasi tayangan iklan antara TV Basic dan TV sama
+
+### Hipotesis
+- $H_0$ : Tidak terdapat perbedaan rata-rata durasi tayangan iklan antara TV Basic dan TV Extended
+- $H_1$ :Terdapat perbedaan rata-rata durasi tayangan iklan antara TV Basic dan TV Extended
+
+### Initial Test
+```{r}
+t_init <- t.test(basic, extend, var.equal = TRUE)
+t_init
+```
+
+Diperoleh p-value yang sangat kecil oleh karena tolak H0 yang berarti rata-rata keduanya berbeda.
+
+### Permutation Test
+
+```{r}
+iter <- 1000
+permut <- NULL
+set.seed(270100)
+for (i in 1:iter){
+      my_sample <- tv %>%
+            mutate(newValue = sample(c(basic, extend), replace = FALSE))
+      permut[i] <- t.test(newValue ~ Cable, data = my_sample, var.equal = TRUE)$statistic
+}
+mean(permut > t_init$statistic)
+```
+**Visualisasi**
+```{r}
+hist(permut, xlab = "", main = "Histogram Permutation Test")
+abline(v = t_init$statistic, col = "red", lwd=2)
+```
+
+Dari hasil diatas diperoleh bahwa p-value dari permutation test sekitar 0.005 yang mana hampir sama dengan p-value dari t test sebenarnya (0.008). Dari gambar juga terlihat semakin jelas, garis berwarna merah adalah nilai statistik dari t test sebenarnya
+
+
+Oleh karena itu dapat disimpulakan dengan permutation test bahwa dengan alpa 5% kita cukup yakin untuk menolak $H_0$, sehingga diperoleh cukup bukti bahwa terdapat perbedaan rata-rata durasi tayangan iklan antara TV Basic dan TV Extended
+
+
